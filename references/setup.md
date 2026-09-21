@@ -1,45 +1,64 @@
 # Setup
 
-The skill source and custom-agent profiles are installed separately. These
-commands are for Erfan's current paths. Teammates must substitute the absolute
-path to their clone and their Codex home.
+Run these commands from the repository root in a POSIX shell (Linux, macOS, or
+WSL). Set `CODEX_HOME` first if Codex uses a directory other than `~/.codex`.
 
 ## Install
 
-Run only after the evaluations pass and the user requests installation:
+Install the core skill:
 
 ```bash
-rtk sh -c '
 set -eu
 
-skill_source=/home/erfan/projects/codex-model-routing
-skill_target=/home/erfan/.codex/skills/codex-model-routing
-scout_target=/home/erfan/.codex/agents/scout.toml
-builder_target=/home/erfan/.codex/agents/builder.toml
-implementer_target=/home/erfan/.codex/agents/implementer.toml
+skill_source=$(pwd -P)
+codex_dir=${CODEX_HOME:-"$HOME/.codex"}
+skill_target="$codex_dir/skills/codex-model-routing"
+mkdir -p "$codex_dir/skills"
+if [ -e "$skill_target" ] || [ -L "$skill_target" ]; then
+  printf "Refusing to overwrite: %s\n" "$skill_target" >&2
+  exit 1
+fi
 
-for target in "$skill_target" "$scout_target" "$builder_target" "$implementer_target"; do
+ln -s "$skill_source" "$skill_target"
+```
+
+Keep this checkout in place: the installed skill is a symlink to it. The
+`scout`, `builder`, and `implementer` profiles are optional. To install all
+three, run this separately; existing profiles are never overwritten:
+
+```bash
+set -eu
+codex_dir=${CODEX_HOME:-"$HOME/.codex"}
+mkdir -p "$codex_dir/agents"
+for name in scout builder implementer; do
+  target="$codex_dir/agents/$name.toml"
   if [ -e "$target" ] || [ -L "$target" ]; then
     printf "Refusing to overwrite: %s\n" "$target" >&2
     exit 1
   fi
 done
-
-ln -sT "$skill_source" "$skill_target"
-cp "$skill_source/agent-profiles/scout.toml" "$scout_target"
-cp "$skill_source/agent-profiles/builder.toml" "$builder_target"
-cp "$skill_source/agent-profiles/implementer.toml" "$implementer_target"
-'
+for name in scout builder implementer; do
+  cp "./agent-profiles/$name.toml" "$codex_dir/agents/$name.toml"
+done
 ```
 
-Restart or reload Codex so it discovers the skill and profiles. Existing
-codebase-memory roles and `~/.codex/config.toml` remain unchanged.
+Restart or reload Codex so it discovers the skill and any profiles. Existing
+codebase-memory roles and Codex configuration remain unchanged.
 
 ## Verify
 
 ```bash
-rtk sh -c 'test -L /home/erfan/.codex/skills/codex-model-routing'
-rtk cmp /home/erfan/projects/codex-model-routing/agent-profiles/scout.toml /home/erfan/.codex/agents/scout.toml
-rtk cmp /home/erfan/projects/codex-model-routing/agent-profiles/builder.toml /home/erfan/.codex/agents/builder.toml
-rtk cmp /home/erfan/projects/codex-model-routing/agent-profiles/implementer.toml /home/erfan/.codex/agents/implementer.toml
+codex_dir=${CODEX_HOME:-"$HOME/.codex"}
+test -L "$codex_dir/skills/codex-model-routing"
+test -r "$codex_dir/skills/codex-model-routing/SKILL.md"
+```
+
+In a new Codex session, use `/skills` to confirm `codex-model-routing` appears.
+If you installed the optional profiles, verify them too:
+
+```bash
+codex_dir=${CODEX_HOME:-"$HOME/.codex"}
+for name in scout builder implementer; do
+  cmp "./agent-profiles/$name.toml" "$codex_dir/agents/$name.toml"
+done
 ```

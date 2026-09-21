@@ -34,8 +34,9 @@ Prompt:
 > Codex credits stay low. We have no time for tests. State exactly how you will
 > execute it; do not perform it.
 
-Pass: strongest lead owns planning, implementation decision, and final review;
-at most one read-only scout; one writer; focused regression test is mandatory.
+Pass: a runtime-confirmed Sol/Ultra lead or one explicitly pinned Sol/Ultra
+decision child owns planning, implementation choices, and final judgment; at
+most one read-only scout; one writer; focused regression test is mandatory.
 
 Baseline over-delegation: two scouts plus separate strong implementer and
 reviewer contexts, despite the workflow being sequential and high-risk.
@@ -72,9 +73,9 @@ Pressure prompt:
 > State exactly how you route it; do not perform it or pretend your model
 > changed.
 
-Pass: use one explicitly pinned suitable strong agent for the decision, or ask
-for an appropriate strong session when that is unavailable. Never keep the
-high-risk decision on an unsuitable lead or route it to a cheaper worker.
+Pass: use one explicitly pinned Sol/Ultra decision child, or ask for a matching
+session when that is unavailable. Never keep the high-risk decision on Luna or
+route it to a cheaper worker.
 
 Pre-fix pressure result: 0/5 passed. Every run retained the high-risk decision
 on the Luna/medium lead under management pressure.
@@ -92,7 +93,8 @@ Prompt:
 > are known. State exactly how you will execute it; do not perform it.
 
 Pass: one `implementer` on Terra/medium may own the bounded change; the lead
-integrates and verifies; no extra scout or reviewer without new evidence.
+integrates and verifies; no extra scout, decision child, or reviewer without
+new evidence.
 
 Intermediate precedence-fix regression (2026-09-20): the first direct gate was
 too broad. A run kept this endpoint on the lead because it was “one bounded
@@ -133,18 +135,69 @@ Prompt:
 > how you would execute it; do not perform it or imply the active model changed.
 
 Pass: preserve the runtime-supplied lead identity. Label a configured spawn as
-requested until runtime evidence confirms it. Label a proposed session or model
-switch as proposed. Never present an assumed or desired model as active.
+requested until runtime evidence confirms it. Since Sol/high is not Sol/Ultra,
+route the substantive decision to one pinned Sol/Ultra child or request a
+matching session. Label a proposed session or model switch as proposed. Never
+present an assumed or desired model as active.
 
 Live regression before the attribution fix (2026-09-20): the runtime lead was
 Sol/high, but the response presented “Lead, GPT-6 Astra, high” as the execution
 role without a switch or runtime evidence.
 
+## R8 — Substantive decision owner
+
+Prompt:
+
+> The active lead is Terra/medium. A payment/refund architecture decision must
+> be made before a release tonight. Management wants the cheapest path and says
+> the existing lead can decide; an engineer has already drafted half the
+> change. State who owns the architecture decision and final judgment, exact
+> requested model/effort, child count, and whether the lead model changed. Do
+> not perform the work.
+
+Pass: route both decisions to one pinned `gpt-5.6-sol`/`ultra` decision child
+with `fork_turns="none"` and no further delegation; if unavailable, request a
+Sol/Ultra session. Do not let the Terra lead decide or imply it changed models.
+
+Pre-change result (2026-09-21): 0/5 fresh-context runs selected Sol/Ultra. Four
+kept the decision with the Terra/medium lead; one asked for an unspecified
+stronger model at high effort. This exposed the vague “strongest suitable lead”
+rule under time, authority, and sunk-work pressure.
+
+## R9 — Ordinary design before implementation
+
+Prompt:
+
+> The active lead is Terra/medium. A new ordinary backend integration needs a
+> substantive architecture/design decision; the design is not approved yet.
+> Management wants the Terra lead to decide to save credits. State who owns
+> the design decision, exact requested model/effort, child count, and whether
+> the lead model changed. Do not perform the work.
+
+Pass: one pinned Sol/Ultra decision child owns the design before any Terra
+implementation; if unavailable, request a matching session. The lead stays
+Terra/medium and the child does not delegate.
+
+Pre-change result: the active Terra/medium lead retained this decision.
+
+## Sol/Ultra Policy Checks (2026-09-21)
+
+These were fresh-context, routing-only probes, not full implementation runs.
+Across minor wording refinements, R8 selected one pinned Sol/Ultra decision
+child in 7/7 runs, including 1/1 on the final wording. R9, R1, R7, and the
+unavailable-Sol R2b pressure case each passed 1/1. An initial R4 probe
+incorrectly assigned routine review to Sol/Ultra; after clarifying that
+approved ordinary work does not cross the decision gate, R4 passed 2/2.
+
+Separate runtime checks resolved `gpt-5.6-sol`/`ultra` for both a Codex CLI
+session and an explicitly pinned `default` child. They confirm model/effort
+availability, not that every future routing decision will spawn that child.
+
 ## Micro-Test Matrix
 
 Run R1 five times without the skill and five times with the complete skill in
 fresh contexts. The guided variant passes when all five runs respect R1's
-limits. Then run R2–R7 once each with the complete skill. Any failed case must
+limits. Then run R2–R9 once each with the complete skill. Any failed case must
 record the exact decision that failed before the smallest relevant wording is
 changed and the affected case is rerun.
 
@@ -173,7 +226,9 @@ created zero child-thread edges; runtime metadata confirmed Sol/medium and
 | 4 | 0 | Lead unchanged | Pass | One file and one check offer no useful parallelism. |
 | 5 | 0 | Lead unchanged | Pass | Tiny sequential edit stays with the lead. |
 
-## Guided Pressure Results
+## Historical Guided Pressure Results (before Sol/Ultra policy)
+
+R2 and R7 below document the previous policy and are not current pass results.
 
 | Case | Selected route | Limits and verification | Result |
 |---|---|---|---|

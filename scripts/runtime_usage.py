@@ -2,14 +2,18 @@
 """Report resolved models and token totals for one local Codex thread tree."""
 
 import argparse
+import os
 import sqlite3
 from pathlib import Path
 
 
 def newest_state_database() -> Path:
-    databases = list((Path.home() / ".codex").glob("state_*.sqlite"))
+    state_home = Path(
+        os.environ.get("CODEX_SQLITE_HOME") or os.environ.get("CODEX_HOME") or Path.home() / ".codex"
+    )
+    databases = list(state_home.glob("state_*.sqlite"))
     if not databases:
-        raise SystemExit("No ~/.codex/state_*.sqlite database found")
+        raise SystemExit(f"No {state_home}/state_*.sqlite database found")
     return max(databases, key=lambda path: int(path.stem.rsplit("_", 1)[1]))
 
 
