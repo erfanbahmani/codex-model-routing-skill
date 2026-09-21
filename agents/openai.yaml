@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Model Routing"
+  short_description: "Choose direct execution, models, and delegation"
+  default_prompt: "Use $codex-model-routing to choose direct execution, a model, or justified delegation for this task."
