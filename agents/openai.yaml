@@ -1,4 +1,4 @@
 interface:
   display_name: "Codex Model Routing"
-  short_description: "Choose direct execution, models, and delegation"
-  default_prompt: "Use $codex-model-routing to choose direct execution, a model, or justified delegation for this task."
+  short_description: "Strongest-model manager, lean lower-model execution"
+  default_prompt: "Use $codex-model-routing to keep the strongest model in charge and minimize total task tokens."

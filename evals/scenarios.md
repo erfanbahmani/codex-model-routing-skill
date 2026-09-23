@@ -1,8 +1,97 @@
 # Routing Evaluation Scenarios
 
-Each run uses a fresh context. Record the stated role, model, effort,
-children, writer count, retries, escalation, verification, and handoff shape.
-Do not score persuasive wording; score only observable routing decisions.
+## Current contract (2026-09-23)
+
+Run each scenario in a fresh session. Score actual spawn arguments and persisted
+model/effort, not a plan's wording. Count input plus output tokens across the
+complete thread tree and verify the task result.
+
+| Scenario | Pass condition |
+|---|---|
+| Astra/Ultra lead, one small edit and one check | Manager decides and executes directly; zero children. |
+| Astra/Ultra lead, 24 short policy documents to extract into a matrix | Manager uses a targeted command and returns the matrix; zero children. |
+| Terra/medium lead, ordinary edit | Request an Astra/Ultra manager-led session before making decisions or editing; zero children. |
+| Astra/Ultra lead, 12 mapped config changes solvable with one script | Direct command and objective check; file count does not trigger a worker. |
+| Astra/Ultra lead, substantial work where avoided manager context exceeds handoff overhead | One `default` worker with explicitly pinned supported lower model/effort owns exploration, edit when needed, and check. Manager does not repeat its full scan or test. |
+| Lower-model worker receives an approved assignment from the manager | Execute within the assignment; no request to replace the worker with the manager and no nested delegation. |
+| Suggested worker model is absent from the active spawn tool | Select an appropriate supported lower model, or work directly and disclose the limitation; no unsupported spawn. |
+| Runtime report with grandchildren, duplicate edges, cycles, or missing usage | Count each reachable ID once, exclude unrelated threads, and mark the total incomplete when records or usage are missing. |
+| Terra/medium lead, refund architecture decision | Request an Astra/Ultra manager-led session; no Terra decision or child fallback. |
+| Any delegated task | No full-history fork, short polling, extra scout/reviewer, or unsupported token-savings claim. |
+
+The previous seven completed A/B pairs found five higher-token treatment runs
+and two refund decisions on the wrong model. Those are the RED baseline for
+this revision. In live follow-ups on 2026-09-23:
+
+- A Terra/medium refund-design run stopped for an Astra/Ultra lead with zero
+  children, without making the architecture decision (28,267 tokens).
+- An Astra/Ultra lead on the 24-document extraction first used a Luna child
+  under intermediate wording (155,435 total tokens). The final direct-first
+  wording returned the same correct 24 rows and six flags with zero children
+  and 50,110 total tokens on the same prompt and fixture.
+- An Astra/Ultra lead reviewed the synthetic refund flow directly with zero
+  children (67,523 tokens). Its design covered cumulative limits, durable
+  idempotency, concurrency, ambiguous provider outcomes, and ledger recovery;
+  no implementation or tests were requested in that run.
+
+These are single-run checks. Repeat paired tasks with quality gates before
+claiming a general token-saving rate; routing-only answers cannot establish it.
+
+### Implementation follow-up
+
+The real repository accounting fix ran on a `default` executor explicitly
+pinned to `gpt-6-luna`/`medium`; persisted runtime metadata confirms that pair.
+It completed implementation and a follow-up correction, passed all three
+unit tests, and spawned no children. Its thread used 478,256 tokens across
+both turns (`01a0ce0c-2f10-7253-9b07-fb39857aa01a`). This is execution evidence,
+not a savings comparison: the manager was continuing an existing long thread.
+
+The accounting regression now checks a grandchild total of 60 through duplicate
+edges and a cycle, then verifies incomplete totals for both NULL usage and a
+missing thread record. Previous numeric totals remain valid only when every
+descendant was present and included; the old helper alone could not establish
+that for deeper trees.
+
+A fresh implementation trial used the committed audit script and tests as its
+starting fixture, with the same accounting requirements. Codex CLI 0.156.1 ran
+with an Astra/Ultra lead and `workspace-write` sandboxing. The treatment chose
+direct execution, completed the implementation, and passed separate checks
+for unique descendants, cycles, unrelated threads, NULL usage, and missing rows.
+Its persisted total matched the JSONL event: 189,051 input + 5,371 output =
+**194,422 tokens**, zero children (`01a0ce14-53ef-7343-8b8a-40bcafb37e61`).
+
+The completed control retry started from the same committed fixture and used
+the same task and environment, with an explicit test-only opt-out from the
+global routing-skill instruction. Both leads were Astra/Ultra. The control
+spawned a `default` edge-case reviewer, which also ran on Astra/Ultra; the skill
+treatment stayed direct. Both passed the independent acceptance checks,
+including traversal through a missing intermediate thread record.
+
+| Completed implementation trial | Lead tokens | Descendant tokens | Total |
+|---|---:|---:|---:|
+| Without routing skill | 268,024 | 44,897 | 312,921 |
+| With routing skill | 194,422 | 0 | 194,422 |
+
+This pair used **118,499 fewer total tokens (37.9%)** with the skill. The saving
+came from avoiding an unnecessary handoff, not from a lower-model executor in
+this pair. It is one diagnostic pair, not an expected savings rate or proof
+that delegated implementation reduces total tokens. Control root:
+`01a0ce1d-cc10-7720-b112-3929eeda2d24`; completed reviewer:
+`01a0ce1e-dac7-7211-870d-86086f4da4bd`.
+
+Excluded attempts are retained separately: global AGENTS.md still requested
+routing despite disabling skill discovery, so the control needed the explicit
+opt-out above. An initial control had no accessible fixture and failed
+acceptance (56,971 tokens). The next control encountered repeated
+`workspace routing discovery failed` errors on WebSocket and HTTPS transports,
+recovered during cancellation, and was interrupted before completion. It had
+spawned an Astra/Ultra test worker and used 180,578 tokens across the two
+threads. Neither attempt is included in the completed-pair comparison.
+
+## Historical scenarios and results (previous policy)
+
+The cases below document the old skill and must not be used as the current
+acceptance criteria.
 
 ## R1 — Trivial cohesive edit
 

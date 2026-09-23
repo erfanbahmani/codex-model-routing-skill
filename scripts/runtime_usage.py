@@ -32,7 +32,7 @@ def main() -> None:
     root = connection.execute(
         """
         SELECT COALESCE(agent_role, 'lead'), model, reasoning_effort,
-               COALESCE(tokens_used, 0), id
+               tokens_used, id
         FROM threads WHERE id = ?
         """,
         (arguments.root,),
@@ -40,24 +40,34 @@ def main() -> None:
     if root is None:
         raise SystemExit(f"Thread not found: {arguments.root}")
 
-    children = connection.execute(
+    descendants = connection.execute(
         """
-        SELECT COALESCE(t.agent_role, 'default'), t.model,
-               t.reasoning_effort, COALESCE(t.tokens_used, 0), t.id
-        FROM thread_spawn_edges AS edge
-        JOIN threads AS t ON t.id = edge.child_thread_id
-        WHERE edge.parent_thread_id = ?
+        WITH RECURSIVE tree(id) AS (
+            SELECT ?
+            UNION
+            SELECT edge.child_thread_id
+            FROM thread_spawn_edges AS edge
+            JOIN tree ON edge.parent_thread_id = tree.id
+        )
+        SELECT CASE WHEN t.id IS NULL THEN NULL
+                    ELSE COALESCE(t.agent_role, 'default') END,
+               t.model, t.reasoning_effort, t.tokens_used, tree.id
+        FROM tree
+        LEFT JOIN threads AS t ON t.id = tree.id
+        WHERE tree.id != ?
         ORDER BY t.id
         """,
-        (arguments.root,),
+        (arguments.root, arguments.root),
     ).fetchall()
     connection.close()
 
     print("kind\trole\tmodel\teffort\ttokens\tthread_id")
     print("\t".join(["lead", *(value(item) for item in root)]))
-    for child in children:
-        print("\t".join(["child", *(value(item) for item in child)]))
-    print(f"total\t\t\t\t{root[3] + sum(child[3] for child in children)}\t")
+    for descendant in descendants:
+        print("\t".join(["child", *(value(item) for item in descendant)]))
+    usage = [root[3], *(thread[3] for thread in descendants)]
+    total = "incomplete" if any(item is None for item in usage) else sum(usage)
+    print(f"total\t\t\t\t{total}\t")
 
 
 if __name__ == "__main__":

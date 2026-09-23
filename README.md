@@ -1,61 +1,64 @@
 # Codex Model Routing
 
-> The best subagent is sometimes no subagent.
+> Strong decisions. Small execution contexts. Fewer total tokens when the work earns a handoff.
 
-**Codex Model Routing** is a small skill for deciding who should do the work: the current lead, a read-only scout, or one bounded implementation agent. It aims for *verified work per credit*, not the lowest-looking model name or the most parallel threads.
+**Codex Model Routing** keeps the strongest available model in charge of every task and gives bounded execution to a lower model only when the handoff is likely to reduce **total tokens**. The default manager is `gpt-6-astra` at `ultra`; you can choose a different manager pair for your account.
 
 ```text
-Substantive decision?   → Sol / Ultra lead or one pinned decision child.
-Is it high risk?        → One writer and focused checks.
-Is it small and local?  → Do it directly. Zero children.
-Is there a bounded, independent unit?
-                       → Delegate once, then verify in the lead.
-Otherwise              → Keep it in the lead.
+Manager lead?          → Own scope, route, and final acceptance.
+Lower-model lead?      → Switch to the manager model before task decisions.
+One command or tiny edit? → Manager handles it directly.
+Large implementation?  → One lower-model worker owns exploration, edit, check.
+After the handoff      → Manager reads decisive evidence and accepts the result.
 ```
 
 ## Why it exists
 
-A cheaper child starts with a fresh context. For a tiny edit, that overhead can cost more tokens than doing the edit directly. This skill makes **direct execution the default**, reserves delegation for work that earns its context, and keeps safety checks in place even under “move fast” pressure.
+A child starts a fresh context. In our first seven paired runs, the skill used more total tokens in five and failed to pin the strongest decision child twice. A follow-up live run pinned Astra/Ultra correctly, but a lower lead still added a scout and repeated waits. This revision requires a strongest-model lead, sends only whole jobs to one lower worker, and keeps one-step jobs direct. It does not promise savings on every task; measure complete runs before claiming them.
 
 | Work | Route |
 | --- | --- |
-| One small local edit and a focused check | Lead, no child |
-| Substantive architecture, planning, or final judgment | Sol / Ultra lead, or one pinned non-writing `gpt-5.6-sol` / `ultra` decision child |
-| One independent research or code-tracing question | Read-only `scout` · Luna / medium |
-| Substantial, fully specified repetitive edit | `builder` · Luna / medium |
-| Approved ordinary implementation across known files or layers | `implementer` · Terra / medium |
-| Payment, security, migrations, public contracts, and other high-risk work | Sol / Ultra owns decisions; one writer and focused checks |
+| Scope, plan, route, final acceptance | Astra / Ultra manager, or your selected strongest available pair |
+| One small cohesive action | Manager directly; no worker context |
+| Short lookup, extraction, summary, or mechanical edit | Manager uses a targeted tool directly |
+| Substantial bounded investigation | Luna / medium worker when a fresh context is expected to reduce total tokens |
+| Complete, specified multi-turn implementation | Luna / medium worker |
+| Complete ordinary implementation needing more judgment | Terra / medium worker |
+| High-risk work | Manager decides; one writer and focused checks |
 
-The lead reviews execution and runs the relevant verification; Sol / Ultra makes final judgments on substantive decisions, not routine reviews of approved implementation. A requested child model is **not** proof of the model that actually ran, and the skill cannot silently switch the active lead model. If Sol / Ultra is unavailable, decision work waits for a matching session; `max` is not a substitute for `ultra`. See the exact rules in [SKILL.md](SKILL.md).
+The manager must be the lead. A lower-model lead must switch before decisions; delegated workers execute under their parent's management and do not repeat this gate. The skill cannot silently switch the active model. Worker spawns use the built-in `default` role with explicit model and effort chosen from the active tool's supported models, avoiding conflicting custom-profile settings. A requested worker model is **not** proof of the model that actually ran. See [SKILL.md](SKILL.md).
 
 ## Requirements
 
-- A current, signed-in [Codex client](https://learn.chatgpt.com/docs/codex/cli) with skills and subagents available. Access to `gpt-5.6-sol` at `ultra` is required for substantive decisions; the optional profiles use `gpt-5.6-luna` and `gpt-5.6-terra`. Model access depends on your account and client and cannot be installed by this repository. See the [Codex model guide](https://learn.chatgpt.com/docs/models) and [subagent guide](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+- A current, signed-in [Codex client](https://learn.chatgpt.com/docs/codex/cli) with skills and subagents available. Access to `gpt-6-astra` at `ultra` is needed for the default manager; if unavailable, select the strongest pair your account supports. The optional profiles use `gpt-6-luna` and `gpt-5.6-terra`; adjust them to supported models before installation. Model access depends on your account and client. See the [Codex model guide](https://learn.chatgpt.com/docs/models) and [subagent guide](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 - No pip, npm, or MCP dependency for core routing. `codebase-memory` is used only when already available. The optional local usage audit and tests need Python 3.10+ and only its standard library.
 - The setup commands use a POSIX shell (Linux, macOS, or WSL).
 
 ## Get started
 
 1. Follow [the setup guide](references/setup.md) to install the skill. Its three custom-agent profiles are optional; installation does not edit your existing Codex configuration.
-2. Reload Codex, then invoke it explicitly in a Codex session:
+2. In Codex or Zed, select `gpt-6-astra` / `ultra` as the lead when available. If you choose a lower lead, the skill will ask for a matching manager-led session before decisions.
+3. Reload Codex, then invoke it explicitly in a Codex session:
 
    ```text
-   Use $codex-model-routing to route this task. Explain whether you will work directly or delegate, and how you will verify the result.
+   Use $codex-model-routing for this task. Keep the strongest model in charge, and choose the route with the fewest expected total tokens that preserves verification.
    ```
 
 Codex can also select a skill when a task matches its description. The [official OpenAI documentation](https://learn.chatgpt.com/docs/build-skills) explains skill discovery and `$` invocation; its [subagent guide](https://learn.chatgpt.com/docs/agent-configuration/subagents) covers custom agent files and model settings.
 
 ## Check what actually happened
 
-For a persisted local Codex thread, inspect the resolved lead and direct-child models, reasoning effort, and total tokens:
+After a local Codex run finishes, inspect the lead and every descendant's persisted model, reasoning effort, and total tokens:
 
 ```bash
 python3 scripts/runtime_usage.py --root YOUR_THREAD_ID
 ```
 
-This optional command reads local Codex SQLite state in read-only mode. It uses `CODEX_SQLITE_HOME` or `CODEX_HOME` when set; for a custom `sqlite_home` configuration, pass `--db /path/to/state_N.sqlite`. If Codex has no persisted local state, there is nothing to audit. It reports usage, **not** money saved; compare complete runs before drawing a credit or latency conclusion.
+This optional command reads local Codex SQLite state in read-only mode. It uses `CODEX_SQLITE_HOME` or `CODEX_HOME` when set; for a custom `sqlite_home` configuration, pass `--db /path/to/state_N.sqlite`. Missing thread records or token usage make the total `incomplete`. If Codex has no persisted local state, there is nothing to audit. Thread metadata is not a per-request model history: use fresh, single-model threads for comparisons. It reports usage, **not** money saved; compare complete runs before drawing a credit or latency conclusion.
 
-The routing scenarios and observed results live in [evals/scenarios.md](evals/scenarios.md). The Sol / Ultra decision policy passed seven fresh payment/refund routing probes across wording refinements; final wording also kept approved endpoint work on the ordinary Terra route and stopped a high-risk decision when Sol / Ultra was unavailable. Separate runtime checks confirmed the exact model/effort in a Codex session and a pinned child. These checks are not a promise of savings or automatic model selection on every task.
+The current routing scenarios and live follow-up results live in [evals/scenarios.md](evals/scenarios.md). With the same Astra/Ultra lead and 24-document prompt, the direct-first revision used 50,110 tokens versus 155,435 when the preceding wording delegated; both answers were correct. This single pair verifies that route, not a general savings rate. More task types and repeated pairs are needed before a broad claim.
+
+A later matched implementation trial used 194,422 tokens with the skill versus 312,921 without it, with both passing independent checks. The skill avoided an extra review agent; this does not establish savings from lower-model coding. Separately, a live Luna/medium executor completed the repository's accounting fix and checks. See the evaluation record for runtime models, thread IDs, and excluded attempts.
 
 ## Project files
 

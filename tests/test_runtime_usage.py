@@ -94,6 +94,72 @@ class RuntimeUsageTest(unittest.TestCase):
         )
         self.assertIn("total\t\t\t\t140\t", result.stdout)
 
+    def test_counts_unique_reachable_descendants_and_marks_missing_usage(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            database = Path(directory) / "state_5.sqlite"
+            connection = sqlite3.connect(database)
+            connection.executescript(
+                """
+                CREATE TABLE threads (
+                    id TEXT PRIMARY KEY,
+                    agent_role TEXT,
+                    model TEXT,
+                    reasoning_effort TEXT,
+                    tokens_used INTEGER
+                );
+                CREATE TABLE thread_spawn_edges (
+                    parent_thread_id TEXT,
+                    child_thread_id TEXT
+                );
+                INSERT INTO threads VALUES
+                    ('root', NULL, 'lead-model', 'high', 10),
+                    ('child', 'worker', 'worker-model', 'medium', 20),
+                    ('grandchild', 'worker', 'worker-model', 'low', 30),
+                    ('unrelated', 'worker', 'other-model', 'low', 500);
+                INSERT INTO thread_spawn_edges VALUES
+                    ('root', 'child'), ('root', 'child'),
+                    ('child', 'grandchild'), ('grandchild', 'root'),
+                    ('unrelated', 'unrelated-child');
+                """
+            )
+            connection.commit()
+            connection.close()
+
+            def run_report() -> subprocess.CompletedProcess[str]:
+                return subprocess.run(
+                    [sys.executable, SCRIPT, "--db", database, "--root", "root"],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                )
+
+            result = run_report()
+            connection = sqlite3.connect(database)
+            connection.execute("UPDATE threads SET tokens_used = NULL WHERE id = 'grandchild'")
+            connection.commit()
+            connection.close()
+            null_usage = run_report()
+            connection = sqlite3.connect(database)
+            connection.execute("UPDATE threads SET tokens_used = 30 WHERE id = 'grandchild'")
+            connection.execute("DELETE FROM threads WHERE id = 'child'")
+            connection.commit()
+            connection.close()
+            missing_thread = run_report()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("child\tworker\tworker-model\tmedium\t20\tchild", result.stdout)
+        self.assertNotIn("unrelated", result.stdout)
+        self.assertEqual(result.stdout.count("\tchild\n"), 1)
+        self.assertIn("child\tworker\tworker-model\tlow\t30\tgrandchild", result.stdout)
+        self.assertIn("total\t\t\t\t60\t", result.stdout)
+        self.assertEqual(null_usage.returncode, 0, null_usage.stderr)
+        self.assertIn("child\tworker\tworker-model\tlow\tunknown\tgrandchild", null_usage.stdout)
+        self.assertIn("total\t\t\t\tincomplete\t", null_usage.stdout)
+        self.assertEqual(missing_thread.returncode, 0, missing_thread.stderr)
+        self.assertIn("child\tunknown\tunknown\tunknown\tunknown\tchild", missing_thread.stdout)
+        self.assertIn("child\tworker\tworker-model\tlow\t30\tgrandchild", missing_thread.stdout)
+        self.assertIn("total\t\t\t\tincomplete\t", missing_thread.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()
