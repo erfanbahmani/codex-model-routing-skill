@@ -1,0 +1,1037 @@
+{
+  "date": "2026-09-23",
+  "experiment": "Controlled Sol direct vs Sol/Luna vs Astra/Luna, not automatic routing selection",
+  "cli_version": "codex-cli 0.156.1",
+  "source_commit": "d846c8bfaad23f1b3d799924594020e847a617e3",
+  "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+  "skill_installed": false,
+  "lead_effort": "ultra",
+  "worker_effort": "medium",
+  "max_concurrent_runs": 2,
+  "repetitions_per_task_arm": 2,
+  "tasks": {
+    "bugfix": "Fix scripts/runtime_usage.py: it currently counts only direct children.\nReport all reachable descendants once, even with duplicate edges and cycles,\nexcluding unrelated threads. Traverse through missing thread records. Missing\nrows and NULL usage must remain visible as unknown and make the total\nincomplete, never silently zero. Preserve known usage, TSV columns and CLI.\nUpdate regression tests and run python3 -m unittest discover -s tests -v.\nOnly the script and tests are in scope.",
+    "large": "Implement the dependency-aware job scheduler in this fixture.\nFollow the public API and behavior specified in scheduler/core.py and\nscheduler/config.py. Jobs start ready only when they have no dependencies;\nother jobs wait until every dependency completes. ready() must return eligible\nIDs in sorted order. start(), complete(), and fail() must enforce valid state\ntransitions. Count an attempt when a job starts; a failure returns it to ready\nuntil max_attempts is reached. Exhausted jobs fail and permanently fail their\nwaiting descendants with an explanatory error. Reject malformed configuration,\nunknown dependency IDs, self-dependencies, and dependency cycles. snapshot()\nmust return a deterministic ID-sorted mapping with state, attempts, and error.\nImplement the existing tests and add focused cases if needed. Run:\npython3 -m unittest discover -s tests -p 'test_*.py' -v\n"
+  },
+  "strategy_prompts": {
+    "common": "This is an isolated, disposable evaluation workspace. Work only in the\ncurrent directory. Do not install skills, change machine configuration, access\nother evaluation runs, commit, push, or contact external services. For this run,\ndo not load machine-level skills or AGENTS.md files: use only procedure guidance\nsupplied in this prompt. This test-specific override applies to both arms.\nThe user explicitly selects {model} with ultra reasoning as the lead/manager\nfor this run. This choice overrides the supplied skill's default manager.\nThe harness writes runtime.json in this directory from this session's persisted\nruntime metadata immediately after startup. Read it if you need to confirm the\nlead model and effort; it is evidence, not just a configuration preference.\nDo not edit runtime.json.\nFollow the assigned execution strategy below. Complete the requested task and its\nchecks. Use Python's standard library only. Prefix shell commands with rtk\n(rtk proxy for unsupported commands). Report results concisely.\n",
+    "direct": "EXECUTION STRATEGY: Work directly, without spawning or delegating to\nany subagent. You own investigation, implementation, tests and final acceptance.\n",
+    "managed": "EXECUTION STRATEGY: This experiment explicitly assigns the delegated\nroute. You manage and make scope/plan/acceptance decisions; delegate the complete\nimplementation and focused tests to exactly one gpt-6-luna/medium executor using\nagent_type=\"default\" and fork_turns=\"none\". The executor owns exploration,\nimplementation and tests; it must not delegate further. Give it the business\nrequirements and owned paths, not the routing skill or manager's full context.\nReuse that same worker for corrections. Inspect the returned diff/evidence and\nmake final acceptance yourself. No separate scouts or reviewers. Do not replace\nthis assigned route with direct implementation. This experiment does not test\nthe skill's automatic route-selection heuristic.\n"
+  },
+  "skill_supplied": "Verbatim SKILL.md in managed-arm prompts only; no installation or discovery test",
+  "metric": "Cumulative reported input plus output over unique root and all descendants; cached input and reasoning output are subsets",
+  "excluded_overhead": "Benchmark setup, supervising conversation, read-only review helper, and report generation",
+  "supplemental_check_timing": "Missing-root check added after review of repetition 1; applied unchanged to all six bugfix outputs; no corrective model runs",
+  "summaries": [
+    {
+      "task": "bugfix",
+      "arm": "sol-direct",
+      "attempts": 2,
+      "completed": 2,
+      "predeclared_checks_passed": 2,
+      "correct_runtime_models": 2,
+      "mean_total": 243813.5,
+      "mean_lead_tokens": 243813.5,
+      "mean_worker_tokens": 0,
+      "mean_seconds": 208.55,
+      "sum_total": 487627
+    },
+    {
+      "task": "bugfix",
+      "arm": "sol-luna",
+      "attempts": 2,
+      "completed": 2,
+      "predeclared_checks_passed": 2,
+      "correct_runtime_models": 2,
+      "mean_total": 370758.5,
+      "mean_lead_tokens": 148741,
+      "mean_worker_tokens": 222017.5,
+      "mean_seconds": 212.3,
+      "sum_total": 741517
+    },
+    {
+      "task": "bugfix",
+      "arm": "astra-luna",
+      "attempts": 2,
+      "completed": 2,
+      "predeclared_checks_passed": 2,
+      "correct_runtime_models": 2,
+      "mean_total": 494905,
+      "mean_lead_tokens": 168487.5,
+      "mean_worker_tokens": 326417.5,
+      "mean_seconds": 242.57500000000002,
+      "sum_total": 989810
+    },
+    {
+      "task": "large",
+      "arm": "sol-direct",
+      "attempts": 2,
+      "completed": 2,
+      "predeclared_checks_passed": 2,
+      "correct_runtime_models": 2,
+      "mean_total": 151065,
+      "mean_lead_tokens": 151065,
+      "mean_worker_tokens": 0,
+      "mean_seconds": 191.405,
+      "sum_total": 302130
+    },
+    {
+      "task": "large",
+      "arm": "sol-luna",
+      "attempts": 2,
+      "completed": 2,
+      "predeclared_checks_passed": 2,
+      "correct_runtime_models": 2,
+      "mean_total": 609867,
+      "mean_lead_tokens": 238729.5,
+      "mean_worker_tokens": 371137.5,
+      "mean_seconds": 278.645,
+      "sum_total": 1219734
+    },
+    {
+      "task": "large",
+      "arm": "astra-luna",
+      "attempts": 2,
+      "completed": 2,
+      "predeclared_checks_passed": 2,
+      "correct_runtime_models": 2,
+      "mean_total": 784556,
+      "mean_lead_tokens": 282182,
+      "mean_worker_tokens": 502374,
+      "mean_seconds": 312.90500000000003,
+      "sum_total": 1569112
+    },
+    {
+      "task": "combined",
+      "arm": "sol-direct",
+      "attempts": 4,
+      "completed": 4,
+      "predeclared_checks_passed": 4,
+      "correct_runtime_models": 4,
+      "mean_total": 197439.25,
+      "mean_lead_tokens": 197439.25,
+      "mean_worker_tokens": 0,
+      "mean_seconds": 199.9775,
+      "sum_total": 789757
+    },
+    {
+      "task": "combined",
+      "arm": "sol-luna",
+      "attempts": 4,
+      "completed": 4,
+      "predeclared_checks_passed": 4,
+      "correct_runtime_models": 4,
+      "mean_total": 490312.75,
+      "mean_lead_tokens": 193735.25,
+      "mean_worker_tokens": 296577.5,
+      "mean_seconds": 245.4725,
+      "sum_total": 1961251
+    },
+    {
+      "task": "combined",
+      "arm": "astra-luna",
+      "attempts": 4,
+      "completed": 4,
+      "predeclared_checks_passed": 4,
+      "correct_runtime_models": 4,
+      "mean_total": 639730.5,
+      "mean_lead_tokens": 225334.75,
+      "mean_worker_tokens": 414395.75,
+      "mean_seconds": 277.74,
+      "sum_total": 2558922
+    }
+  ],
+  "runs": [
+    {
+      "task": "bugfix",
+      "arm": "astra-luna",
+      "repetition": 1,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-astra",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scripts/runtime_usage.py": "9a639fc6ddc2d634c9abe6edad41818dc52950b43a0bc2a093ad71737c7e853a",
+        "tests/test_runtime_usage.py": "44b53cb48a5ba5d67effa0e74c060ef6eb256cb39d5f935faa403e3e769983c1"
+      },
+      "prompt_sha256": "825cb1a874c9e104ee0e28bea50e925a304f35da1fd99b03b90d32aedfdb5d50",
+      "seconds": 207.49,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-001",
+      "root_usage": {
+        "input_tokens": 140412,
+        "cached_input_tokens": 110080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1891,
+        "reasoning_output_tokens": 817
+      },
+      "threads": [
+        {
+          "id": "B-thread-001",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "ultra",
+          "tokens_used": 142303,
+          "observed_contexts": [
+            [
+              "gpt-6-astra",
+              "ultra"
+            ]
+          ]
+        },
+        {
+          "id": "B-thread-002",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "tokens_used": 319509,
+          "observed_contexts": [
+            [
+              "gpt-6-luna",
+              "medium"
+            ]
+          ]
+        }
+      ],
+      "total": 461812,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-bugfix-astra-luna-1",
+      "transport_errors": [],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 453444,
+        "cached_input_tokens": 399360,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8368,
+        "reasoning_output_tokens": 2358,
+        "total_tokens": 461812
+      },
+      "requested_spawns": [
+        {
+          "task_name": "runtime_usage_fix",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 142303,
+      "worker_tokens": 319509,
+      "supplemental_check": {
+        "run": "comparison-bugfix-astra-luna-1",
+        "check": "missing root row with reachable child",
+        "result": "FAILED",
+        "detail": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\nAssertionError: Thread not found: r\n\n"
+      }
+    },
+    {
+      "task": "bugfix",
+      "arm": "astra-luna",
+      "repetition": 2,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-astra",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scripts/runtime_usage.py": "9a639fc6ddc2d634c9abe6edad41818dc52950b43a0bc2a093ad71737c7e853a",
+        "tests/test_runtime_usage.py": "44b53cb48a5ba5d67effa0e74c060ef6eb256cb39d5f935faa403e3e769983c1"
+      },
+      "prompt_sha256": "825cb1a874c9e104ee0e28bea50e925a304f35da1fd99b03b90d32aedfdb5d50",
+      "seconds": 277.66,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-003",
+      "root_usage": {
+        "input_tokens": 191974,
+        "cached_input_tokens": 176896,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2698,
+        "reasoning_output_tokens": 1273
+      },
+      "threads": [
+        {
+          "id": "B-thread-003",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "ultra",
+          "tokens_used": 194672,
+          "observed_contexts": [
+            [
+              "gpt-6-astra",
+              "ultra"
+            ]
+          ]
+        },
+        {
+          "id": "B-thread-004",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "tokens_used": 333326,
+          "observed_contexts": [
+            [
+              "gpt-6-luna",
+              "medium"
+            ]
+          ]
+        }
+      ],
+      "total": 527998,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-bugfix-astra-luna-2",
+      "transport_errors": [],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 517170,
+        "cached_input_tokens": 461312,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 10828,
+        "reasoning_output_tokens": 2562,
+        "total_tokens": 527998
+      },
+      "requested_spawns": [
+        {
+          "task_name": "runtime_usage_fix",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 194672,
+      "worker_tokens": 333326,
+      "supplemental_check": {
+        "run": "comparison-bugfix-astra-luna-2",
+        "check": "missing root row with reachable child",
+        "result": "passed"
+      }
+    },
+    {
+      "task": "bugfix",
+      "arm": "sol-direct",
+      "repetition": 1,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-sol",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scripts/runtime_usage.py": "9a639fc6ddc2d634c9abe6edad41818dc52950b43a0bc2a093ad71737c7e853a",
+        "tests/test_runtime_usage.py": "44b53cb48a5ba5d67effa0e74c060ef6eb256cb39d5f935faa403e3e769983c1"
+      },
+      "prompt_sha256": "27faef8cbe99bdfd50e9201c1c1d2d58e661dc8473a000eb30089b4b3c0c1d09",
+      "seconds": 207.5,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-005",
+      "root_usage": {
+        "input_tokens": 238586,
+        "cached_input_tokens": 196224,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 9024,
+        "reasoning_output_tokens": 5611
+      },
+      "threads": [
+        {
+          "id": "B-thread-005",
+          "model": "gpt-6-sol",
+          "reasoning_effort": "ultra",
+          "tokens_used": 247610,
+          "observed_contexts": [
+            [
+              "gpt-6-sol",
+              "ultra"
+            ]
+          ]
+        }
+      ],
+      "total": 247610,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-bugfix-sol-direct-1",
+      "transport_errors": [],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 238586,
+        "cached_input_tokens": 196224,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 9024,
+        "reasoning_output_tokens": 5611,
+        "total_tokens": 247610
+      },
+      "requested_spawns": [],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 247610,
+      "worker_tokens": 0,
+      "supplemental_check": {
+        "run": "comparison-bugfix-sol-direct-1",
+        "check": "missing root row with reachable child",
+        "result": "passed"
+      }
+    },
+    {
+      "task": "bugfix",
+      "arm": "sol-direct",
+      "repetition": 2,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-sol",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scripts/runtime_usage.py": "9a639fc6ddc2d634c9abe6edad41818dc52950b43a0bc2a093ad71737c7e853a",
+        "tests/test_runtime_usage.py": "44b53cb48a5ba5d67effa0e74c060ef6eb256cb39d5f935faa403e3e769983c1"
+      },
+      "prompt_sha256": "27faef8cbe99bdfd50e9201c1c1d2d58e661dc8473a000eb30089b4b3c0c1d09",
+      "seconds": 209.6,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-006",
+      "root_usage": {
+        "input_tokens": 231764,
+        "cached_input_tokens": 205824,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8253,
+        "reasoning_output_tokens": 4202
+      },
+      "threads": [
+        {
+          "id": "B-thread-006",
+          "model": "gpt-6-sol",
+          "reasoning_effort": "ultra",
+          "tokens_used": 240017,
+          "observed_contexts": [
+            [
+              "gpt-6-sol",
+              "ultra"
+            ]
+          ]
+        }
+      ],
+      "total": 240017,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-bugfix-sol-direct-2",
+      "transport_errors": [],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 231764,
+        "cached_input_tokens": 205824,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8253,
+        "reasoning_output_tokens": 4202,
+        "total_tokens": 240017
+      },
+      "requested_spawns": [],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 240017,
+      "worker_tokens": 0,
+      "supplemental_check": {
+        "run": "comparison-bugfix-sol-direct-2",
+        "check": "missing root row with reachable child",
+        "result": "passed"
+      }
+    },
+    {
+      "task": "bugfix",
+      "arm": "sol-luna",
+      "repetition": 1,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-sol",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scripts/runtime_usage.py": "9a639fc6ddc2d634c9abe6edad41818dc52950b43a0bc2a093ad71737c7e853a",
+        "tests/test_runtime_usage.py": "44b53cb48a5ba5d67effa0e74c060ef6eb256cb39d5f935faa403e3e769983c1"
+      },
+      "prompt_sha256": "cb76d37be778a73c946076e805f65d53953731d523f81d9a1d07c2df44017d65",
+      "seconds": 229.76,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-007",
+      "root_usage": {
+        "input_tokens": 156247,
+        "cached_input_tokens": 132480,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 5834,
+        "reasoning_output_tokens": 4780
+      },
+      "threads": [
+        {
+          "id": "B-thread-007",
+          "model": "gpt-6-sol",
+          "reasoning_effort": "ultra",
+          "tokens_used": 162081,
+          "observed_contexts": [
+            [
+              "gpt-6-sol",
+              "ultra"
+            ]
+          ]
+        },
+        {
+          "id": "B-thread-008",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "tokens_used": 270071,
+          "observed_contexts": [
+            [
+              "gpt-6-luna",
+              "medium"
+            ]
+          ]
+        }
+      ],
+      "total": 432152,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-bugfix-sol-luna-1",
+      "transport_errors": [],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 421847,
+        "cached_input_tokens": 372864,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 10305,
+        "reasoning_output_tokens": 5581,
+        "total_tokens": 432152
+      },
+      "requested_spawns": [
+        {
+          "task_name": "runtime_usage_fix",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 162081,
+      "worker_tokens": 270071,
+      "supplemental_check": {
+        "run": "comparison-bugfix-sol-luna-1",
+        "check": "missing root row with reachable child",
+        "result": "FAILED",
+        "detail": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\nAssertionError: Thread not found: r\n\n"
+      }
+    },
+    {
+      "task": "bugfix",
+      "arm": "sol-luna",
+      "repetition": 2,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-sol",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scripts/runtime_usage.py": "9a639fc6ddc2d634c9abe6edad41818dc52950b43a0bc2a093ad71737c7e853a",
+        "tests/test_runtime_usage.py": "44b53cb48a5ba5d67effa0e74c060ef6eb256cb39d5f935faa403e3e769983c1"
+      },
+      "prompt_sha256": "cb76d37be778a73c946076e805f65d53953731d523f81d9a1d07c2df44017d65",
+      "seconds": 194.84,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-009",
+      "root_usage": {
+        "input_tokens": 132828,
+        "cached_input_tokens": 116352,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2573,
+        "reasoning_output_tokens": 1593
+      },
+      "threads": [
+        {
+          "id": "B-thread-009",
+          "model": "gpt-6-sol",
+          "reasoning_effort": "ultra",
+          "tokens_used": 135401,
+          "observed_contexts": [
+            [
+              "gpt-6-sol",
+              "ultra"
+            ]
+          ]
+        },
+        {
+          "id": "B-thread-010",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "tokens_used": 173964,
+          "observed_contexts": [
+            [
+              "gpt-6-luna",
+              "medium"
+            ]
+          ]
+        }
+      ],
+      "total": 309365,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-bugfix-sol-luna-2",
+      "transport_errors": [],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 304221,
+        "cached_input_tokens": 267648,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 5144,
+        "reasoning_output_tokens": 2217,
+        "total_tokens": 309365
+      },
+      "requested_spawns": [
+        {
+          "task_name": "runtime_usage_fix",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 135401,
+      "worker_tokens": 173964,
+      "supplemental_check": {
+        "run": "comparison-bugfix-sol-luna-2",
+        "check": "missing root row with reachable child",
+        "result": "FAILED",
+        "detail": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\nAssertionError: Thread not found: r\n\n"
+      }
+    },
+    {
+      "task": "large",
+      "arm": "astra-luna",
+      "repetition": 1,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-astra",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scheduler/__init__.py": "675cb72b7003d778b1b5572a439a1160ccbe10022fd3c28a6b0166b1a0a82c7b",
+        "scheduler/config.py": "6b68477222b1cbc4c0677d1cd54d938764b3d70070cc18c2fc6cd2c12fc9d6df",
+        "scheduler/core.py": "81ebf734891dd38a752ca19a859c45f0625c2f6cdfc37a8476b862ab68f1e35b",
+        "tests/test_scheduler.py": "e5258a3478c253ac92d152cff1ada65f558b7413d3ec7ac22b038efff0790879"
+      },
+      "prompt_sha256": "76a37015d9d0a77cc63f0d8a343081f1f2616e8d444055033a0e0b6ba5d2b83c",
+      "seconds": 211.71,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-011",
+      "root_usage": {
+        "input_tokens": 162213,
+        "cached_input_tokens": 137344,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2368,
+        "reasoning_output_tokens": 1121
+      },
+      "threads": [
+        {
+          "id": "B-thread-011",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "ultra",
+          "tokens_used": 164581,
+          "observed_contexts": [
+            [
+              "gpt-6-astra",
+              "ultra"
+            ]
+          ]
+        },
+        {
+          "id": "B-thread-012",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "tokens_used": 436805,
+          "observed_contexts": [
+            [
+              "gpt-6-luna",
+              "medium"
+            ]
+          ]
+        }
+      ],
+      "total": 601386,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-large-astra-luna-1",
+      "transport_errors": [
+        "Reconnecting... 2/5 (workspace routing discovery failed)"
+      ],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 592993,
+        "cached_input_tokens": 542336,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8393,
+        "reasoning_output_tokens": 2415,
+        "total_tokens": 601386
+      },
+      "requested_spawns": [
+        {
+          "task_name": "scheduler_implementation",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 164581,
+      "worker_tokens": 436805,
+      "supplemental_check": null
+    },
+    {
+      "task": "large",
+      "arm": "astra-luna",
+      "repetition": 2,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-astra",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scheduler/__init__.py": "675cb72b7003d778b1b5572a439a1160ccbe10022fd3c28a6b0166b1a0a82c7b",
+        "scheduler/config.py": "6b68477222b1cbc4c0677d1cd54d938764b3d70070cc18c2fc6cd2c12fc9d6df",
+        "scheduler/core.py": "81ebf734891dd38a752ca19a859c45f0625c2f6cdfc37a8476b862ab68f1e35b",
+        "tests/test_scheduler.py": "e5258a3478c253ac92d152cff1ada65f558b7413d3ec7ac22b038efff0790879"
+      },
+      "prompt_sha256": "76a37015d9d0a77cc63f0d8a343081f1f2616e8d444055033a0e0b6ba5d2b83c",
+      "seconds": 414.1,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-013",
+      "root_usage": {
+        "input_tokens": 395705,
+        "cached_input_tokens": 368128,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 4078,
+        "reasoning_output_tokens": 2055
+      },
+      "threads": [
+        {
+          "id": "B-thread-013",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "ultra",
+          "tokens_used": 399783,
+          "observed_contexts": [
+            [
+              "gpt-6-astra",
+              "ultra"
+            ]
+          ]
+        },
+        {
+          "id": "B-thread-014",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "tokens_used": 567943,
+          "observed_contexts": [
+            [
+              "gpt-6-luna",
+              "medium"
+            ]
+          ]
+        }
+      ],
+      "total": 967726,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-large-astra-luna-2",
+      "transport_errors": [],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 952363,
+        "cached_input_tokens": 871680,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 15363,
+        "reasoning_output_tokens": 4170,
+        "total_tokens": 967726
+      },
+      "requested_spawns": [
+        {
+          "task_name": "scheduler_executor",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 399783,
+      "worker_tokens": 567943,
+      "supplemental_check": null
+    },
+    {
+      "task": "large",
+      "arm": "sol-direct",
+      "repetition": 1,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-sol",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scheduler/__init__.py": "675cb72b7003d778b1b5572a439a1160ccbe10022fd3c28a6b0166b1a0a82c7b",
+        "scheduler/config.py": "6b68477222b1cbc4c0677d1cd54d938764b3d70070cc18c2fc6cd2c12fc9d6df",
+        "scheduler/core.py": "81ebf734891dd38a752ca19a859c45f0625c2f6cdfc37a8476b862ab68f1e35b",
+        "tests/test_scheduler.py": "e5258a3478c253ac92d152cff1ada65f558b7413d3ec7ac22b038efff0790879"
+      },
+      "prompt_sha256": "91c8299360014e2a05104b4cfa54abff2417b1505dcd0e4445c22597f6866d21",
+      "seconds": 183.1,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-015",
+      "root_usage": {
+        "input_tokens": 151729,
+        "cached_input_tokens": 124544,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 7938,
+        "reasoning_output_tokens": 4393
+      },
+      "threads": [
+        {
+          "id": "B-thread-015",
+          "model": "gpt-6-sol",
+          "reasoning_effort": "ultra",
+          "tokens_used": 159667,
+          "observed_contexts": [
+            [
+              "gpt-6-sol",
+              "ultra"
+            ]
+          ]
+        }
+      ],
+      "total": 159667,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-large-sol-direct-1",
+      "transport_errors": [],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 151729,
+        "cached_input_tokens": 124544,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 7938,
+        "reasoning_output_tokens": 4393,
+        "total_tokens": 159667
+      },
+      "requested_spawns": [],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 159667,
+      "worker_tokens": 0,
+      "supplemental_check": null
+    },
+    {
+      "task": "large",
+      "arm": "sol-direct",
+      "repetition": 2,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-sol",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scheduler/__init__.py": "675cb72b7003d778b1b5572a439a1160ccbe10022fd3c28a6b0166b1a0a82c7b",
+        "scheduler/config.py": "6b68477222b1cbc4c0677d1cd54d938764b3d70070cc18c2fc6cd2c12fc9d6df",
+        "scheduler/core.py": "81ebf734891dd38a752ca19a859c45f0625c2f6cdfc37a8476b862ab68f1e35b",
+        "tests/test_scheduler.py": "e5258a3478c253ac92d152cff1ada65f558b7413d3ec7ac22b038efff0790879"
+      },
+      "prompt_sha256": "91c8299360014e2a05104b4cfa54abff2417b1505dcd0e4445c22597f6866d21",
+      "seconds": 199.71,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-016",
+      "root_usage": {
+        "input_tokens": 134111,
+        "cached_input_tokens": 84224,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8352,
+        "reasoning_output_tokens": 4641
+      },
+      "threads": [
+        {
+          "id": "B-thread-016",
+          "model": "gpt-6-sol",
+          "reasoning_effort": "ultra",
+          "tokens_used": 142463,
+          "observed_contexts": [
+            [
+              "gpt-6-sol",
+              "ultra"
+            ]
+          ]
+        }
+      ],
+      "total": 142463,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-large-sol-direct-2",
+      "transport_errors": [],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 134111,
+        "cached_input_tokens": 84224,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8352,
+        "reasoning_output_tokens": 4641,
+        "total_tokens": 142463
+      },
+      "requested_spawns": [],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 142463,
+      "worker_tokens": 0,
+      "supplemental_check": null
+    },
+    {
+      "task": "large",
+      "arm": "sol-luna",
+      "repetition": 1,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-sol",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scheduler/__init__.py": "675cb72b7003d778b1b5572a439a1160ccbe10022fd3c28a6b0166b1a0a82c7b",
+        "scheduler/config.py": "6b68477222b1cbc4c0677d1cd54d938764b3d70070cc18c2fc6cd2c12fc9d6df",
+        "scheduler/core.py": "81ebf734891dd38a752ca19a859c45f0625c2f6cdfc37a8476b862ab68f1e35b",
+        "tests/test_scheduler.py": "e5258a3478c253ac92d152cff1ada65f558b7413d3ec7ac22b038efff0790879"
+      },
+      "prompt_sha256": "4a2584e68902922ac6a4214941b32ffdbeb3f5889194bab6c23edd944ea0d755",
+      "seconds": 205.65,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-017",
+      "root_usage": {
+        "input_tokens": 157542,
+        "cached_input_tokens": 118528,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3166,
+        "reasoning_output_tokens": 1954
+      },
+      "threads": [
+        {
+          "id": "B-thread-017",
+          "model": "gpt-6-sol",
+          "reasoning_effort": "ultra",
+          "tokens_used": 160708,
+          "observed_contexts": [
+            [
+              "gpt-6-sol",
+              "ultra"
+            ]
+          ]
+        },
+        {
+          "id": "B-thread-018",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "tokens_used": 392741,
+          "observed_contexts": [
+            [
+              "gpt-6-luna",
+              "medium"
+            ]
+          ]
+        }
+      ],
+      "total": 553449,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-large-sol-luna-1",
+      "transport_errors": [
+        "Reconnecting... 2/5 (workspace routing discovery failed)"
+      ],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 545376,
+        "cached_input_tokens": 475392,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8073,
+        "reasoning_output_tokens": 2569,
+        "total_tokens": 553449
+      },
+      "requested_spawns": [
+        {
+          "task_name": "scheduler_impl",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 160708,
+      "worker_tokens": 392741,
+      "supplemental_check": null
+    },
+    {
+      "task": "large",
+      "arm": "sol-luna",
+      "repetition": 2,
+      "exit_code": 0,
+      "requested_manager": "gpt-6-sol",
+      "requested_effort": "ultra",
+      "fixture_hashes": {
+        "scheduler/__init__.py": "675cb72b7003d778b1b5572a439a1160ccbe10022fd3c28a6b0166b1a0a82c7b",
+        "scheduler/config.py": "6b68477222b1cbc4c0677d1cd54d938764b3d70070cc18c2fc6cd2c12fc9d6df",
+        "scheduler/core.py": "81ebf734891dd38a752ca19a859c45f0625c2f6cdfc37a8476b862ab68f1e35b",
+        "tests/test_scheduler.py": "e5258a3478c253ac92d152cff1ada65f558b7413d3ec7ac22b038efff0790879"
+      },
+      "prompt_sha256": "4a2584e68902922ac6a4214941b32ffdbeb3f5889194bab6c23edd944ea0d755",
+      "seconds": 351.64,
+      "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+      "root": "B-thread-019",
+      "root_usage": {
+        "input_tokens": 311801,
+        "cached_input_tokens": 260608,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 4950,
+        "reasoning_output_tokens": 3156
+      },
+      "threads": [
+        {
+          "id": "B-thread-019",
+          "model": "gpt-6-sol",
+          "reasoning_effort": "ultra",
+          "tokens_used": 316751,
+          "observed_contexts": [
+            [
+              "gpt-6-sol",
+              "ultra"
+            ]
+          ]
+        },
+        {
+          "id": "B-thread-020",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "tokens_used": 349534,
+          "observed_contexts": [
+            [
+              "gpt-6-luna",
+              "medium"
+            ]
+          ]
+        }
+      ],
+      "total": 666285,
+      "acceptance": "passed",
+      "unittest_exit_code": 0,
+      "run": "comparison-large-sol-luna-2",
+      "transport_errors": [
+        "Reconnecting... 2/5 (stream disconnected before completion: Connection reset by peer (os error 104))",
+        "Reconnecting... 3/5 (stream disconnected before completion: Connection refused (os error 111))",
+        "Reconnecting... 4/5 (stream disconnected before completion: Connection refused (os error 111))"
+      ],
+      "telemetry_issues": [],
+      "tree_usage": {
+        "input_tokens": 656936,
+        "cached_input_tokens": 574208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 9349,
+        "reasoning_output_tokens": 3541,
+        "total_tokens": 666285
+      },
+      "requested_spawns": [
+        {
+          "task_name": "scheduler_executor",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "strategy_compliant": true,
+      "contexts_match_db": true,
+      "lead_tokens": 316751,
+      "worker_tokens": 349534,
+      "supplemental_check": null
+    }
+  ]
+}

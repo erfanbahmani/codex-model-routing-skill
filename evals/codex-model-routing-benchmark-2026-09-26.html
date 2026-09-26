@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Codex Model Routing — benchmark analysis</title>
+  <style>
+    @page { size: A4; margin: 16mm 16mm 19mm 16mm; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #17243b; font: 12pt/1.45 "DejaVu Sans", Arial, sans-serif; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: 36pt; line-height: 1.12; letter-spacing: -1.2px; margin-bottom: 15px; }
+    h2 { font-size: 21pt; line-height: 1.2; letter-spacing: -.4px; margin-bottom: 12px; color: #102644; }
+    h3 { font-size: 12pt; margin: 20px 0 7px; color: #0b7187; text-transform: uppercase; letter-spacing: .8px; }
+    p { margin-bottom: 11px; }
+    a { color: #087c95; text-decoration: none; }
+    small, .small { font-size: 9.5pt; }
+    .eyebrow { color: #0b7d93; font-size: 9.5pt; font-weight: bold; letter-spacing: 1.9px; text-transform: uppercase; }
+    .muted { color: #526279; }
+    .rule { border-top: 2px solid #cfe0e7; margin: 20px 0; }
+    .page { page-break-before: always; }
+    .keep { page-break-inside: avoid; }
+    .cover { min-height: 244mm; position: relative; }
+    .cover .topline { border-top: 8px solid #0c8795; padding-top: 22px; }
+    .cover h1 { max-width: 610px; margin: 44px 0 17px; }
+    .subtitle { font-size: 15pt; line-height: 1.45; color: #465b73; max-width: 570px; }
+    .cover .date { color: #526279; margin-top: 15px; }
+    .panel { background: #edf5f7; border-left: 4px solid #0c8795; padding: 13px 16px; margin: 15px 0; }
+    .panel.warn { background: #fff5e7; border-color: #e9a43b; }
+    .panel.danger { background: #fff1ef; border-color: #dc6a55; }
+    .panel p:last-child { margin-bottom: 0; }
+    .cover .intro { margin-top: 32px; }
+    .cover .bottom { position: absolute; bottom: 0; border-top: 1px solid #b7cbd3; padding-top: 12px; width: 100%; }
+    .kpi-row { display: table; width: 100%; border-spacing: 8px 0; margin: 17px -8px 16px; }
+    .kpi { display: table-cell; width: 33%; vertical-align: top; background: #edf5f7; padding: 14px; border-top: 4px solid #0c8795; }
+    .kpi.amber { background: #fff5e7; border-color: #e9a43b; }
+    .kpi.red { background: #fff1ef; border-color: #dc6a55; }
+    .kpi strong { display: block; font-size: 22pt; line-height: 1.15; color: #102644; }
+    .kpi span { display: block; margin-top: 4px; font-size: 9pt; color: #526279; }
+    .two-col { display: table; width: 100%; border-spacing: 12px 0; margin: 0 -12px; }
+    .two-col > div { display: table-cell; width: 50%; vertical-align: top; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0 16px; table-layout: fixed; }
+    th { background: #123653; color: white; text-align: left; font-size: 9.5pt; font-weight: bold; padding: 7px 7px; }
+    td { padding: 6px 7px; border-bottom: 1px solid #d9e4e9; vertical-align: top; font-size: 10pt; }
+    tr:nth-child(even) td { background: #f5f8fa; }
+    tr.total td { background: #e1eff2; border-top: 2px solid #5ca8b0; font-weight: bold; }
+    .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .up { color: #ad4d33; font-weight: bold; }
+    .down { color: #087c72; font-weight: bold; }
+    .caption { color: #5b6c7c; font-size: 9pt; margin-top: -8px; margin-bottom: 15px; }
+    .metric-line { display: table; width: 100%; margin: 10px 0; }
+    .metric-line .label { display: table-cell; width: 125px; font-size: 10pt; }
+    .metric-line .track { display: table-cell; background: #e2ebef; height: 16px; }
+    .metric-line .value { display: table-cell; width: 100px; text-align: right; font-size: 10pt; padding-left: 8px; }
+    .fill { display: block; height: 16px; background: #177f94; }
+    .fill.amber { background: #d89b46; }
+    .fill.red { background: #c9705e; }
+    ol, ul { padding-left: 20px; margin-top: 6px; }
+    li { margin-bottom: 7px; }
+    .tight li { margin-bottom: 3px; }
+    .source-list { padding-left: 20px; overflow-wrap: break-word; }
+    .source-list li { font-size: 9.5pt; margin-bottom: 10px; }
+    code { font-family: "DejaVu Sans Mono", monospace; font-size: 9.5pt; }
+    .mono { font-family: "DejaVu Sans Mono", monospace; font-size: 9pt; }
+    .badge { display: inline-block; padding: 2px 6px; background: #e1eff2; border-radius: 3px; font-size: 9pt; font-weight: bold; color: #126077; }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div class="topline eyebrow">Evidence-led benchmark analysis / 26 September 2026</div>
+    <h1>Codex Model Routing<br>Tokens, credits &amp; correctness</h1>
+    <p class="subtitle">A presentation-ready analysis of two controlled test campaigns across small edits, extraction, configuration, feature work, a graph bug, code review, and scheduling.</p>
+    <p class="date">Scope: current routing-policy source at commit <code>d846c8b</code> · Codex CLI <code>0.156.1</code></p>
+    <div class="panel intro">
+      <p><strong>What this skill does.</strong> Codex Model Routing is a written decision policy for a strong lead model. The lead scopes the task, chooses direct work or one bounded lower-model worker, verifies the worker’s actual model, reviews the result, and counts tokens across the entire agent tree. It does not automatically switch the active lead model or guarantee savings.</p>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><strong>−0.98%</strong><span>tokens in the 11-pair natural-routing retest</span></div>
+      <div class="kpi"><strong>−50.1%</strong><span>estimated Standard-speed credits in that same test mix</span></div>
+      <div class="kpi red"><strong>0 / 2</strong><span>Sol→Luna bug outputs passed a later missing-root check</span></div>
+    </div>
+    <p class="small muted">The credit numbers are a 26 September 2026 rate-card model, not observed cash charges or subscription debits. The quality result is from a separate forced-delegation campaign and must not be merged into the 11-pair total.</p>
+    <div class="bottom small muted">Evidence level: exploratory, synthetic, small-sample, not independently replicated. Full run-level results and calculation inputs follow.</div>
+  </section>
+
+  <section class="page">
+    <div class="eyebrow">01 / Executive readout</div>
+    <h2>What the evidence actually says</h2>
+    <div class="panel keep">
+      <p><strong>Natural routing with an Astra lead:</strong> 11 matched pairs (22 completed runs) used 2,841,526 tokens without the skill and 2,813,604 with it. All predeclared checks passed. Repricing each recorded model’s input, cached input, and output at the current Codex Standard rate card gives 218.604 versus 109.182 credits. That is a test-mix result, not a proven general saving or an observed bill.</p>
+    </div>
+    <div class="panel warn keep">
+      <p><strong>Direct work vs delegation:</strong> the seven direct-route treatment runs saved 671,952 tokens; the four Luna-delegated treatment runs added 644,030 tokens. Both repetitions of the graph bug and scheduler used more tokens with delegation. Cheaper worker tokens outweighed that token growth in the rate-card calculation, but only because models have very different prices.</p>
+    </div>
+    <div class="panel danger keep">
+      <p><strong>Forced Sol/Astra manager comparison:</strong> on two implementation tasks repeated twice, Sol→Luna used 148.3% more tokens than Sol direct, while its estimated credits were 22.3% lower. Both Sol→Luna bug outputs failed a later, uniformly applied missing-root check that both Sol-direct outputs passed. Therefore the lower credit figure is <em>not</em> evidence of lower cost for an equally correct bug fix.</p>
+    </div>
+    <h3>Decision this benchmark can support</h3>
+    <p>Use the skill as a <strong>selective routing policy to investigate</strong>, not a blanket token-reduction promise. In the observed natural-routing mix, the model-weighted credit estimate fell substantially; total tokens barely changed. The strongest safe operational lesson is to keep short work direct and require a quality gate before treating delegated work as a cheaper equivalent.</p>
+    <h3>Why two campaigns are separate</h3>
+    <p>Campaign A measures the skill’s <em>own route selection</em> with an Astra/ultra lead; the control was free to use normal agents and did so. Campaign B <em>forced</em> a Luna worker in two complex tasks to compare manager strategies; it is not a test of the current policy’s natural route choice. Totals, percentages, and quality claims are compared <em>within</em> each campaign only.</p>
+    <p class="small muted">Method follows benchmark-reporting guidance that requires decision fit, workload provenance, task-specific quality checks, complete accounting, and explicit limits [1–4]. Earlier 21 September tests used an older policy and are excluded from current-policy aggregates.</p>
+  </section>
+
+  <section class="page">
+    <div class="eyebrow">02 / Protocol and accounting</div>
+    <h2>How the benchmark was measured</h2>
+    <div class="two-col">
+      <div>
+        <h3>Campaign A · natural route</h3>
+        <p>Seven synthetic task types, 11 matched pairs, fresh disposable workspace and lead session per run. Same task, starting fixture, lead <code>gpt-6-astra/ultra</code>, and acceptance check within each pair. Only treatment received the unchanged skill text in its prompt. Controls could delegate normally; they created 13 Astra/ultra descendants. Treatment chose seven direct runs and four runs with exactly one runtime-confirmed Luna/medium worker. The skill was not installed.</p>
+      </div>
+      <div>
+        <h3>Campaign B · forced manager strategy</h3>
+        <p>Two implementation tasks × three strategies × two fresh runs: Sol direct, Sol→Luna, Astra→Luna. The managed arms received the skill plus an explicit requirement to use one worker; direct Sol had no skill and no delegation. Runtime model/effort and full thread tree were checked. All 12 passed predeclared checks; a later bug edge case is reported separately.</p>
+      </div>
+    </div>
+    <p class="small muted">Both campaigns used isolated synthetic fixtures, ignored user configuration, disabled installed-skill and plugin discovery, and supplied the same runtime model metadata mechanism to comparison arms. No production project or personal skill directory was modified.</p>
+    <h3>Metrics and price basis</h3>
+    <p><strong>Processed tokens</strong> = input + output across the lead and every descendant, with each thread counted once. Cached input is a subset of input; reasoning output is a subset of output. <strong>Estimated Codex credits</strong> = Σ by model of [(input − cached input) × input rate + cached input × cached rate + output × output rate] / 1,000,000. Recorded cache-write tokens were zero. Rates below are the Codex Standard-speed rate card viewed 26 September 2026 [5].</p>
+    <table class="keep">
+      <thead><tr><th style="width:33%">Model</th><th class="num">Input / 1M</th><th class="num">Cached / 1M</th><th class="num">Output / 1M</th></tr></thead>
+      <tbody>
+        <tr><td>GPT-6 Astra</td><td class="num">250 credits</td><td class="num">25 credits</td><td class="num">1,250 credits</td></tr>
+        <tr><td>GPT-6 Sol</td><td class="num">50 credits</td><td class="num">5 credits</td><td class="num">250 credits</td></tr>
+        <tr><td>GPT-6 Luna</td><td class="num">2.5 credits</td><td class="num">0.25 credits</td><td class="num">12.5 credits</td></tr>
+      </tbody>
+    </table>
+    <div class="panel warn keep">
+      <p><strong>Do not read credits as a bill.</strong> Subscription-included usage, account discounts, Enterprise agreements, Fast mode, and any provider adjustments can differ. Actual debits were not captured. As an <em>alternative hypothetical</em>, the API Standard short-context token rates [6] are 1/25 of these credit figures for the three models (with zero cache writes): Campaign A would be about $8.74 vs $4.37; Campaign B $0.75 / $0.58 / $2.37. Those were not API-key runs or charges. Request-level context-tier data were not retained, so the API figure is illustrative only.</p>
+    </div>
+    <p class="small muted">Only subject-run tokens are in the comparisons. Benchmark setup, checking, analysis, and this document are excluded. Connection retries make wall-time and billing-invoice comparisons unsuitable.</p>
+  </section>
+
+  <section class="page">
+    <div class="eyebrow">03 / Campaign A · 11 matched pairs</div>
+    <h2>Natural routing: task-level results</h2>
+    <p>Category totals below sum all completed matched pairs in that category; <em>n</em> is the pair count. Negative change favors the skill. Credits use recovered per-thread model usage, not an allocation based on total tokens.</p>
+    <table>
+      <thead><tr><th style="width:23%">Task (pairs)</th><th class="num">Control tokens</th><th class="num">Skill tokens</th><th class="num">Δ tokens</th><th class="num">Control credits</th><th class="num">Skill credits</th><th class="num">Δ credits</th></tr></thead>
+      <tbody>
+        <tr><td>Small edit (2)</td><td class="num">285,059</td><td class="num">119,787</td><td class="num down">−58.0%</td><td class="num">23.171</td><td class="num">11.778</td><td class="num down">−49.2%</td></tr>
+        <tr><td>Extraction (1)</td><td class="num">156,149</td><td class="num">60,468</td><td class="num down">−61.3%</td><td class="num">15.309</td><td class="num">5.824</td><td class="num down">−62.0%</td></tr>
+        <tr><td>12-file config (1)</td><td class="num">114,498</td><td class="num">79,509</td><td class="num down">−30.6%</td><td class="num">11.165</td><td class="num">7.237</td><td class="num down">−35.2%</td></tr>
+        <tr><td>Feature (2)</td><td class="num">449,435</td><td class="num">164,160</td><td class="num down">−63.5%</td><td class="num">36.010</td><td class="num">14.062</td><td class="num down">−60.9%</td></tr>
+        <tr><td>Graph bug (2)</td><td class="num">782,043</td><td class="num">1,070,897</td><td class="num up">+36.9%</td><td class="num">57.484</td><td class="num">29.461</td><td class="num down">−48.8%</td></tr>
+        <tr><td>Refund review (1)</td><td class="num">224,384</td><td class="num">133,649</td><td class="num down">−40.4%</td><td class="num">16.370</td><td class="num">12.522</td><td class="num down">−23.5%</td></tr>
+        <tr><td>Scheduler (2)</td><td class="num">829,958</td><td class="num">1,185,134</td><td class="num up">+42.8%</td><td class="num">59.095</td><td class="num">28.298</td><td class="num down">−52.1%</td></tr>
+        <tr class="total"><td>All 11 pairs</td><td class="num">2,841,526</td><td class="num">2,813,604</td><td class="num">−0.98%</td><td class="num">218.604</td><td class="num">109.182</td><td class="num">−50.05%</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">A category’s credit change is a modeled Standard-rate comparison; all task types met the campaign’s predeclared acceptance criteria.</p>
+    <h3>Overall contrast · same 11-pair mix</h3>
+    <div class="metric-line"><span class="label">Control tokens</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="value">2.842m</span></div>
+    <div class="metric-line"><span class="label">Skill tokens</span><span class="track"><span class="fill amber" style="width:99%"></span></span><span class="value">2.814m</span></div>
+    <div class="metric-line"><span class="label">Control credits</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="value">218.604</span></div>
+    <div class="metric-line"><span class="label">Skill credits</span><span class="track"><span class="fill amber" style="width:50%"></span></span><span class="value">109.182</span></div>
+    <p class="small muted">Token bars and credit bars each have their own control-normalized 100% scale; do not compare bar lengths across units.</p>
+  </section>
+
+  <section class="page">
+    <div class="eyebrow">04 / Campaign A · interpretation</div>
+    <h2>Where the gain came from—and where it did not</h2>
+    <p><strong>Small and bounded tasks:</strong> the skill kept seven treatment runs direct, while the unrestricted controls created Astra children. Those seven pairs saved 671,952 processed tokens in total. The task-level checks covered exact Decimal formatting, document extraction, 12-file configuration, feature API behavior, and a seven-criterion refund review. This indicates a useful direct-work bias <em>against this agent-prone control</em>; an already-direct baseline may show less benefit.</p>
+    <p><strong>Substantial implementation:</strong> Luna was actually used in the two graph-bug and two scheduler treatments. Each of those four runs used more tokens than its match; together they added 644,030 tokens and nearly erased the direct-run gains. The graph-bug treatment totals were 535,590 and 535,307 versus 416,509 and 365,534. Scheduler treatments were 604,222 and 580,912 versus 451,801 and 378,157.</p>
+    <div class="panel keep">
+      <p>In the first graph-bug pair, the Astra lead used 214,039 tokens with the skill vs 217,164 in control—a saving of only 3,125. The Luna worker used 321,551 tokens, while all control workers combined used 199,345. The extra worker work more than explains the token regression. Observable traces include repeated reading, diff inspection, a follow-up, corrections, and rerun checks; they do not prove a universal model tendency.</p>
+    </div>
+    <p><strong>Why credits still fell:</strong> the Codex Standard rate card assigns Luna 1/100 of Astra’s input, cached-input, and output credits per token. In the delegated task categories, many more low-rate Luna tokens replaced higher-rate Astra activity. The four Luna threads together contributed about 1.439m tokens but only 0.956 modeled credits; the two delegated categories’ Astra leads still contributed 56.803 credits. This is price substitution, not token efficiency.</p>
+    <h3>Quality coverage matters</h3>
+    <p>All 22 Campaign A outputs passed its independent predeclared checks and the applicable fixture suites. That does <em>not</em> establish complete semantic equivalence: Campaign B later exposed a missing-root bug case absent from its original acceptance checks. Campaign A’s graph check covered a missing <em>intermediate</em> row, not the later missing <em>root</em> case. The two campaigns use different fixtures and should not be conflated.</p>
+    <h3>Observable routing, not an installed product</h3>
+    <p>All Campaign A leads were runtime-confirmed Astra/ultra. All four treatment workers were explicitly pinned and runtime-confirmed Luna/medium, with no nested workers. The test supplied <code>SKILL.md</code> verbatim in treatment prompts and deliberately left personal skill directories untouched. It verifies the policy <em>when provided</em>, not automatic discovery in every Codex or Zed client. The Terra route did not trigger.</p>
+  </section>
+
+  <section class="page">
+    <div class="eyebrow">05 / Campaign B · forced strategies</div>
+    <h2>Sol direct vs two manager/worker routes</h2>
+    <p>Two fresh repetitions per task and strategy. Both managed strategies received the skill plus a <strong>forced one-Luna-worker instruction</strong>; direct Sol did not receive the skill. This isolates a manager-strategy comparison more than it validates the skill’s own route choice. All leads used ultra effort; workers used medium.</p>
+    <table>
+      <thead><tr><th style="width:20%">Task</th><th style="width:18%">Strategy</th><th class="num">Run 1</th><th class="num">Run 2</th><th class="num">Mean tokens</th><th class="num">Credits<br>(2 runs)</th><th class="num">Extra bug<br>check</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3">Recursive usage bug</td><td>Sol direct</td><td class="num">247,610</td><td class="num">240,017</td><td class="num">243,813.5</td><td class="num">9.745</td><td class="num down">2/2</td></tr>
+        <tr><td>Sol → Luna</td><td class="num">432,152</td><td class="num">309,365</td><td class="num">370,758.5</td><td class="num">5.657</td><td class="num up">0/2</td></tr>
+        <tr><td>Astra → Luna</td><td class="num">461,812</td><td class="num">527,998</td><td class="num">494,905</td><td class="num">24.750</td><td class="num up">1/2</td></tr>
+        <tr><td rowspan="3">Dependency-aware scheduler</td><td>Sol direct</td><td class="num">159,667</td><td class="num">142,463</td><td class="num">151,065</td><td class="num">8.970</td><td class="num">—</td></tr>
+        <tr><td>Sol → Luna</td><td class="num">553,449</td><td class="num">666,285</td><td class="num">609,867</td><td class="num">8.875</td><td class="num">—</td></tr>
+        <tr><td>Astra → Luna</td><td class="num">601,386</td><td class="num">967,726</td><td class="num">784,556</td><td class="num">34.447</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">All 12 runs passed the predeclared checks. “Extra bug check” is a later supplemental check, applied unchanged to all six bug outputs; scheduler has no corresponding check.</p>
+    <table class="keep">
+      <thead><tr><th>Strategy across four tasks</th><th class="num">Lead tokens</th><th class="num">Worker tokens</th><th class="num">Total tokens</th><th class="num">Estimated credits</th></tr></thead>
+      <tbody>
+        <tr><td>Sol direct</td><td class="num">789,757</td><td class="num">0</td><td class="num">789,757</td><td class="num">18.715</td></tr>
+        <tr><td>Sol → Luna</td><td class="num">774,941</td><td class="num">1,186,310</td><td class="num">1,961,251</td><td class="num">14.533</td></tr>
+        <tr><td>Astra → Luna</td><td class="num">901,339</td><td class="num">1,657,583</td><td class="num">2,558,922</td><td class="num">59.197</td></tr>
+      </tbody>
+    </table>
+    <div class="panel warn keep">
+      <p>Relative to Sol direct, Sol→Luna used <strong>148.3% more tokens</strong> but <strong>22.3% fewer modeled credits</strong>. Relative to Astra→Luna, it used 23.4% fewer tokens and 75.5% fewer credits. These are descriptive numbers from only four matched tasks per strategy—not a general model ranking.</p>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="eyebrow">06 / Quality, limits, decision</div>
+    <h2>A cheap run is useful only if it is correct</h2>
+    <p>The predeclared bug checks covered unique descendants, duplicate edges, cycles, unrelated threads, NULL usage, and traversal through a missing intermediate row. After read-only review, one additional check tested a root ID with <em>no thread row</em> but an edge to a known child. The root should appear as unknown, the child should remain visible with known tokens, and the total should be incomplete. Both Sol-direct outputs passed; both Sol→Luna and one Astra→Luna output exited “Thread not found.” No trial was repaired or excluded after this finding.</p>
+    <div class="panel danger keep">
+      <p>The extra check is <strong>post hoc</strong>, so it is not a substitute for a predeclared pass rate. It is nonetheless direct evidence that the planned suite missed a meaningful edge case. A claim that Sol→Luna delivered the same bug-fix quality for fewer credits is unsupported. We do not report a cost-per-correct-result estimate for that arm.</p>
+    </div>
+    <h3>Threats to validity</h3>
+    <ul class="tight">
+      <li><strong>Small and selected:</strong> one or two repetitions per category, synthetic fixtures, and no production-workload sampling. Do not infer statistical significance or a team-wide savings rate.</li>
+      <li><strong>Control choice:</strong> Campaign A’s no-skill controls all spawned Astra agents; an already-direct control could erase much of the observed benefit.</li>
+      <li><strong>Different treatment:</strong> Campaign B forced delegation and omitted the skill from direct Sol. It tests those procedures, not a pure isolated policy effect.</li>
+      <li><strong>Cost model:</strong> credits were recomputed from telemetry at a later rate card; actual subscription charges, quota debits, context-tier adjustments, and any contractual discounts were not measured.</li>
+      <li><strong>Runtime conditions:</strong> some sessions reconnected, and the forced-strategy fixtures lacked Git history. No clean latency comparison exists.</li>
+      <li><strong>Coverage:</strong> quality gates were task-specific but incomplete, as the later root case demonstrated. Current repo implementation is not implicated by the fixture failures.</li>
+    </ul>
+    <h3>What is safe to say in a presentation</h3>
+    <div class="panel keep"><p>“In an 11-pair synthetic retest, this routing policy was actually followed and reduced estimated Standard-speed model credits by 50.1% for that task mix, while processed tokens were nearly unchanged. A separate forced-delegation test showed more tokens and uncovered a correctness edge case, so general cost or quality superiority is not established.”</p></div>
+    <p><strong>Next defensible test:</strong> pre-register all quality cases (including missing root), sample real Git-backed team tasks, include direct Sol and direct Astra baselines, run more repetitions in randomized order, retain request-level usage and actual credit-dashboard data, and report cost only for outputs meeting the same acceptance gate. No new trials were run for this document.</p>
+  </section>
+
+  <section class="page">
+    <div class="eyebrow">Appendix A / All Campaign A pairs</div>
+    <h2>Run-level token record</h2>
+    <p>Every completed matched pair is listed. This makes the near-zero aggregate token change inspectable rather than hiding opposite task-level effects.</p>
+    <table>
+      <thead><tr><th>Task / pair</th><th class="num">No skill</th><th class="num">With skill</th><th class="num">Difference</th><th class="num">Control children</th><th class="num">Skill children</th></tr></thead>
+      <tbody>
+        <tr><td>Small edit / 1</td><td class="num">142,551</td><td class="num">59,866</td><td class="num down">−82,685</td><td class="num">1</td><td class="num">0</td></tr>
+        <tr><td>Small edit / 2</td><td class="num">142,508</td><td class="num">59,921</td><td class="num down">−82,587</td><td class="num">1</td><td class="num">0</td></tr>
+        <tr><td>Extraction / 1</td><td class="num">156,149</td><td class="num">60,468</td><td class="num down">−95,681</td><td class="num">1</td><td class="num">0</td></tr>
+        <tr><td>12-file config / 1</td><td class="num">114,498</td><td class="num">79,509</td><td class="num down">−34,989</td><td class="num">1</td><td class="num">0</td></tr>
+        <tr><td>Feature / 1</td><td class="num">224,828</td><td class="num">80,530</td><td class="num down">−144,298</td><td class="num">1</td><td class="num">0</td></tr>
+        <tr><td>Feature / 2</td><td class="num">224,607</td><td class="num">83,630</td><td class="num down">−140,977</td><td class="num">1</td><td class="num">0</td></tr>
+        <tr><td>Graph bug / 1</td><td class="num">416,509</td><td class="num">535,590</td><td class="num up">+119,081</td><td class="num">2</td><td class="num">1</td></tr>
+        <tr><td>Graph bug / 2</td><td class="num">365,534</td><td class="num">535,307</td><td class="num up">+169,773</td><td class="num">1</td><td class="num">1</td></tr>
+        <tr><td>Refund review / 1</td><td class="num">224,384</td><td class="num">133,649</td><td class="num down">−90,735</td><td class="num">1</td><td class="num">0</td></tr>
+        <tr><td>Scheduler / 1</td><td class="num">451,801</td><td class="num">604,222</td><td class="num up">+152,421</td><td class="num">2</td><td class="num">1</td></tr>
+        <tr><td>Scheduler / 2</td><td class="num">378,157</td><td class="num">580,912</td><td class="num up">+202,755</td><td class="num">1</td><td class="num">1</td></tr>
+        <tr class="total"><td>All pairs</td><td class="num">2,841,526</td><td class="num">2,813,604</td><td class="num">−27,922</td><td class="num">13</td><td class="num">4</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">The first feature control had a transport failure before any model usage and was replaced from the untouched fixture by <code>metadata-feature-base-3</code>; it is not a completed pair. Pilot and interrupted runs are excluded. Recovered, completed reconnecting runs remain included. See the machine-readable Campaign A artifact for IDs and flags.</p>
+    <h3>Acceptance scope by task</h3>
+    <p class="small">Small edit: exact Decimal values. Extraction: exact structured answer. Configuration: twelve TOML files against immutable CSV. Feature: Decimal averages, empty/missing customers, filtering and unchanged inputs. Graph bug: descendants, cycles, NULL usage and missing intermediate row. Refund review: seven criteria including idempotency, transaction ownership and ambiguous outcomes. Scheduler: config/readiness/retry/state checks and its fixture suite.</p>
+  </section>
+
+  <section class="page">
+    <div class="eyebrow">Appendix B / Credit calculation input</div>
+    <h2>Per-model usage behind Campaign A credits</h2>
+    <p class="small">Recovered from the final token event of every thread in the 22 selected runs: all 39 thread totals matched their SQLite rows, and the 22 summed run totals matched JSON. Input includes cached input. All cache-write values were zero. A = Astra, L = Luna; “control” means without skill.</p>
+    <table>
+      <thead><tr><th style="width:25%">Task</th><th style="width:14%">Arm</th><th style="width:11%">Model</th><th class="num">Input</th><th class="num">Cached input</th><th class="num">Output</th></tr></thead>
+      <tbody>
+        <tr><td>Small edit</td><td>Control</td><td>A</td><td class="num">282,983</td><td class="num">222,976</td><td class="num">2,076</td></tr>
+        <tr><td>Small edit</td><td>Skill</td><td>A</td><td class="num">118,487</td><td class="num">86,528</td><td class="num">1,300</td></tr>
+        <tr><td>Extraction</td><td>Control</td><td>A</td><td class="num">155,167</td><td class="num">109,824</td><td class="num">982</td></tr>
+        <tr><td>Extraction</td><td>Skill</td><td>A</td><td class="num">59,940</td><td class="num">43,648</td><td class="num">528</td></tr>
+        <tr><td>12-file config</td><td>Control</td><td>A</td><td class="num">113,238</td><td class="num">83,200</td><td class="num">1,260</td></tr>
+        <tr><td>12-file config</td><td>Skill</td><td>A</td><td class="num">78,498</td><td class="num">60,672</td><td class="num">1,011</td></tr>
+        <tr><td>Feature</td><td>Control</td><td>A</td><td class="num">444,222</td><td class="num">362,496</td><td class="num">5,213</td></tr>
+        <tr><td>Feature</td><td>Skill</td><td>A</td><td class="num">160,869</td><td class="num">134,528</td><td class="num">3,291</td></tr>
+        <tr><td>Graph bug</td><td>Control</td><td>A</td><td class="num">767,631</td><td class="num">677,504</td><td class="num">14,412</td></tr>
+        <tr><td>Graph bug</td><td>Skill</td><td>A</td><td class="num">384,577</td><td class="num">333,184</td><td class="num">6,267</td></tr>
+        <tr><td>Graph bug</td><td>Skill</td><td>L</td><td class="num">668,318</td><td class="num">608,000</td><td class="num">11,735</td></tr>
+        <tr><td>Refund review</td><td>Control</td><td>A</td><td class="num">217,598</td><td class="num">206,720</td><td class="num">6,786</td></tr>
+        <tr><td>Refund review</td><td>Skill</td><td>A</td><td class="num">129,829</td><td class="num">109,824</td><td class="num">3,820</td></tr>
+        <tr><td>Scheduler</td><td>Control</td><td>A</td><td class="num">816,669</td><td class="num">718,592</td><td class="num">13,289</td></tr>
+        <tr><td>Scheduler</td><td>Skill</td><td>A</td><td class="num">419,355</td><td class="num">378,112</td><td class="num">6,422</td></tr>
+        <tr><td>Scheduler</td><td>Skill</td><td>L</td><td class="num">745,310</td><td class="num">680,960</td><td class="num">14,047</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">These aggregates are included so the PDF remains auditable even without access to the local session database. The accompanying Campaign B JSON already retains per-run model/input/output records for its credit calculation. Rounding in the main tables is display-only; calculations used the full values.</p>
+  </section>
+
+  <section class="page">
+    <div class="eyebrow">Appendix C / Provenance and references</div>
+    <h2>Evidence trail and reporting sources</h2>
+    <h3>Local artifacts</h3>
+    <p class="small">Tested repository commit: <code>d846c8bfaad23f1b3d799924594020e847a617e3</code>. <code>SKILL.md</code> SHA-256: <code>9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795</code>. Codex CLI: <code>0.156.1</code>. Source policy and the following relative files accompany this report:</p>
+    <ul class="tight small">
+      <li><code>SKILL.md</code> — actual routing policy.</li>
+      <li><code>evals/live-routing-retest-2026-09-23.json</code> and <code>.md</code> — Campaign A run-ID aliases, models, checks, and exclusions.</li>
+      <li><code>evals/sol-manager-comparison-2026-09-23.json</code> and <code>.md</code> — Campaign B run records, model usage, fixture hashes, and supplemental check.</li>
+      <li><code>evals/scenarios.md</code> — scenario definitions and earlier context.</li>
+    </ul>
+    <p class="small">Campaign A cost components on the preceding page were recovered from persisted local thread telemetry, which may not travel with a cloned repository. The aggregated values here preserve the calculation. Before publication, local session UUIDs in both JSON files were replaced consistently with public aliases; relationships and numbers remain, but aliases cannot look up the private telemetry. The 21 September old-policy result (7 pairs, +103.5% tokens) is not pooled: that policy and manager arrangement differed. This PDF did not generate new model trials.</p>
+    <h3>Benchmark-reporting and price references</h3>
+    <ol class="source-list">
+      <li>OpenAI, <em>Evaluation best practices</em> — task-specific datasets, metrics, logging, and human judgment. <a href="https://developers.openai.com/api/docs/guides/evaluation-best-practices">developers.openai.com/api/docs/guides/evaluation-best-practices</a></li>
+      <li>OpenAI, <em>Evaluate agent workflows</em> — end-to-end agent assessment. <a href="https://developers.openai.com/api/docs/guides/agent-evals">developers.openai.com/api/docs/guides/agent-evals</a></li>
+      <li>MLCommons, <em>How to Tell When a Benchmark Is Worth Trusting</em> (2026) — decision fit, provenance, reproduction, and limits on claims. <a href="https://mlcommons.org/2026/08/benchmark-is-worth-trusting/">mlcommons.org/2026/08/benchmark-is-worth-trusting/</a></li>
+      <li>ACM SIGMOD, <em>Reproducibility</em> — inputs, protocol, results, and derivation. <a href="https://reproducibility.sigmodconf.hosting.acm.org/">reproducibility.sigmodconf.hosting.acm.org/</a></li>
+      <li>OpenAI, <em>Codex pricing</em>, Standard-speed credits per million tokens; accessed 26 Sep 2026. <a href="https://learn.chatgpt.com/docs/pricing">learn.chatgpt.com/docs/pricing</a></li>
+      <li>OpenAI, <em>API pricing</em>, Standard short-context scenario; accessed 26 Sep 2026. <a href="https://developers.openai.com/api/docs/pricing">developers.openai.com/api/docs/pricing</a></li>
+    </ol>
+    <div class="rule"></div>
+    <p class="small muted">Prepared for presentation from saved synthetic benchmark evidence. Results are descriptive; they are not a vendor endorsement, a billing audit, or a guarantee of future savings.</p>
+  </section>
+</body>
+</html>

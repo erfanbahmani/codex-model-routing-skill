@@ -1,0 +1,800 @@
+{
+  "date": "2026-09-23",
+  "commit": "d846c8bfaad23f1b3d799924594020e847a617e3",
+  "skill_sha256": "9ca16bcc188b24cd1dc50404117a1822a14064178671f6efdf7cd16fd64ce795",
+  "cli_version": "0.156.1",
+  "method": "Fresh matched Astra/Ultra sessions; skill supplied verbatim in treatment prompt only; never installed. Full descendant reported input+output tokens. Feature base repetition 3 replaces network-failed repetition 1. Initial pilots documented separately in Markdown report.",
+  "records": [
+    {
+      "run": "metadata-bugfix-base-1",
+      "task": "bugfix",
+      "arm": "base",
+      "repetition": 1,
+      "root": "A-thread-001",
+      "acceptance": "passed",
+      "total_tokens": 416509,
+      "input_tokens": 408664,
+      "cached_input_tokens": 362368,
+      "output_tokens": 7845,
+      "reasoning_output_tokens": 2115,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "regression_tests",
+          "agent_type": "worker",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": "all"
+        },
+        {
+          "task_name": "review_fix",
+          "agent_type": "default",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": "all"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-001",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 217164
+        },
+        {
+          "id": "A-thread-002",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 120423
+        },
+        {
+          "id": "A-thread-003",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 78922
+        }
+      ]
+    },
+    {
+      "run": "metadata-bugfix-base-2",
+      "task": "bugfix",
+      "arm": "base",
+      "repetition": 2,
+      "root": "A-thread-004",
+      "acceptance": "passed",
+      "total_tokens": 365534,
+      "input_tokens": 358967,
+      "cached_input_tokens": 315136,
+      "output_tokens": 6567,
+      "reasoning_output_tokens": 2053,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "regression_tests",
+          "agent_type": "worker",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": null
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-004",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 247852
+        },
+        {
+          "id": "A-thread-005",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 117682
+        }
+      ]
+    },
+    {
+      "run": "metadata-bugfix-skill-1",
+      "task": "bugfix",
+      "arm": "skill",
+      "repetition": 1,
+      "root": "A-thread-006",
+      "acceptance": "passed",
+      "total_tokens": 535590,
+      "input_tokens": 526973,
+      "cached_input_tokens": 483712,
+      "output_tokens": 8617,
+      "reasoning_output_tokens": 1669,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "fix_runtime_usage",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-006",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 214039
+        },
+        {
+          "id": "A-thread-007",
+          "model": "gpt-6-luna",
+          "effort": "medium",
+          "tokens": 321551
+        }
+      ]
+    },
+    {
+      "run": "metadata-bugfix-skill-2",
+      "task": "bugfix",
+      "arm": "skill",
+      "repetition": 2,
+      "root": "A-thread-008",
+      "acceptance": "passed",
+      "total_tokens": 535307,
+      "input_tokens": 525922,
+      "cached_input_tokens": 457472,
+      "output_tokens": 9385,
+      "reasoning_output_tokens": 2810,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "fix_runtime_usage",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-008",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 176805
+        },
+        {
+          "id": "A-thread-009",
+          "model": "gpt-6-luna",
+          "effort": "medium",
+          "tokens": 358502
+        }
+      ]
+    },
+    {
+      "run": "metadata-bulk_config-base-1",
+      "task": "bulk_config",
+      "arm": "base",
+      "repetition": 1,
+      "root": "A-thread-010",
+      "acceptance": "passed",
+      "total_tokens": 114498,
+      "input_tokens": 113238,
+      "cached_input_tokens": 83200,
+      "output_tokens": 1260,
+      "reasoning_output_tokens": 62,
+      "transport_error_count": 9,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "review_checks",
+          "agent_type": "explorer",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": "all"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-010",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 58516
+        },
+        {
+          "id": "A-thread-011",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 55982
+        }
+      ]
+    },
+    {
+      "run": "metadata-bulk_config-skill-1",
+      "task": "bulk_config",
+      "arm": "skill",
+      "repetition": 1,
+      "root": "A-thread-012",
+      "acceptance": "passed",
+      "total_tokens": 79509,
+      "input_tokens": 78498,
+      "cached_input_tokens": 60672,
+      "output_tokens": 1011,
+      "reasoning_output_tokens": 202,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [],
+      "threads": [
+        {
+          "id": "A-thread-012",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 79509
+        }
+      ]
+    },
+    {
+      "run": "metadata-extraction-base-1",
+      "task": "extraction",
+      "arm": "base",
+      "repetition": 1,
+      "root": "A-thread-013",
+      "acceptance": "passed",
+      "total_tokens": 156149,
+      "input_tokens": 155167,
+      "cached_input_tokens": 109824,
+      "output_tokens": 982,
+      "reasoning_output_tokens": 42,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "check_closure",
+          "agent_type": null,
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": "all"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-013",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 100404
+        },
+        {
+          "id": "A-thread-014",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 55745
+        }
+      ]
+    },
+    {
+      "run": "metadata-extraction-skill-1",
+      "task": "extraction",
+      "arm": "skill",
+      "repetition": 1,
+      "root": "A-thread-015",
+      "acceptance": "passed",
+      "total_tokens": 60468,
+      "input_tokens": 59940,
+      "cached_input_tokens": 43648,
+      "output_tokens": 528,
+      "reasoning_output_tokens": 43,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [],
+      "threads": [
+        {
+          "id": "A-thread-015",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 60468
+        }
+      ]
+    },
+    {
+      "run": "metadata-feature-base-1",
+      "task": "feature",
+      "arm": "base",
+      "repetition": 1,
+      "root": "A-thread-016",
+      "acceptance": "FAILED: run not completed",
+      "total_tokens": 0,
+      "input_tokens": null,
+      "cached_input_tokens": null,
+      "output_tokens": null,
+      "reasoning_output_tokens": null,
+      "transport_error_count": 10,
+      "telemetry_issues": [
+        "event/DB usage mismatch: A-thread-016",
+        "full-tree total mismatch"
+      ],
+      "requested_spawns": [],
+      "threads": [
+        {
+          "id": "A-thread-016",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 0
+        }
+      ]
+    },
+    {
+      "run": "metadata-feature-base-2",
+      "task": "feature",
+      "arm": "base",
+      "repetition": 2,
+      "root": "A-thread-017",
+      "acceptance": "passed",
+      "total_tokens": 224607,
+      "input_tokens": 221978,
+      "cached_input_tokens": 187904,
+      "output_tokens": 2629,
+      "reasoning_output_tokens": 457,
+      "transport_error_count": 5,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "regression_tests",
+          "agent_type": "worker",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": null
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-017",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 150365
+        },
+        {
+          "id": "A-thread-018",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 74242
+        }
+      ]
+    },
+    {
+      "run": "metadata-feature-base-3",
+      "task": "feature",
+      "arm": "base",
+      "repetition": 3,
+      "root": "A-thread-019",
+      "acceptance": "passed",
+      "total_tokens": 224828,
+      "input_tokens": 222244,
+      "cached_input_tokens": 174592,
+      "output_tokens": 2584,
+      "reasoning_output_tokens": 389,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "regression_tests",
+          "agent_type": "worker",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": "all"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-019",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 149907
+        },
+        {
+          "id": "A-thread-020",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 74921
+        }
+      ]
+    },
+    {
+      "run": "metadata-feature-skill-1",
+      "task": "feature",
+      "arm": "skill",
+      "repetition": 1,
+      "root": "A-thread-021",
+      "acceptance": "passed",
+      "total_tokens": 80530,
+      "input_tokens": 78946,
+      "cached_input_tokens": 71296,
+      "output_tokens": 1584,
+      "reasoning_output_tokens": 208,
+      "transport_error_count": 5,
+      "telemetry_issues": [],
+      "requested_spawns": [],
+      "threads": [
+        {
+          "id": "A-thread-021",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 80530
+        }
+      ]
+    },
+    {
+      "run": "metadata-feature-skill-2",
+      "task": "feature",
+      "arm": "skill",
+      "repetition": 2,
+      "root": "A-thread-022",
+      "acceptance": "passed",
+      "total_tokens": 83630,
+      "input_tokens": 81923,
+      "cached_input_tokens": 63232,
+      "output_tokens": 1707,
+      "reasoning_output_tokens": 117,
+      "transport_error_count": 9,
+      "telemetry_issues": [],
+      "requested_spawns": [],
+      "threads": [
+        {
+          "id": "A-thread-022",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 83630
+        }
+      ]
+    },
+    {
+      "run": "metadata-large-base-1",
+      "task": "large",
+      "arm": "base",
+      "repetition": 1,
+      "root": "A-thread-023",
+      "acceptance": "passed",
+      "total_tokens": 451801,
+      "input_tokens": 445747,
+      "cached_input_tokens": 372096,
+      "output_tokens": 6054,
+      "reasoning_output_tokens": 714,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "config_and_tests",
+          "agent_type": "worker",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": "all"
+        },
+        {
+          "task_name": "review_core",
+          "agent_type": "explorer",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": null
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-023",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 268738
+        },
+        {
+          "id": "A-thread-024",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 100624
+        },
+        {
+          "id": "A-thread-025",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 82439
+        }
+      ]
+    },
+    {
+      "run": "metadata-large-base-2",
+      "task": "large",
+      "arm": "base",
+      "repetition": 2,
+      "root": "A-thread-026",
+      "acceptance": "passed",
+      "total_tokens": 378157,
+      "input_tokens": 370922,
+      "cached_input_tokens": 346496,
+      "output_tokens": 7235,
+      "reasoning_output_tokens": 2032,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "focused_tests",
+          "agent_type": "worker",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": "all"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-026",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 217400
+        },
+        {
+          "id": "A-thread-027",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 160757
+        }
+      ]
+    },
+    {
+      "run": "metadata-large-skill-1",
+      "task": "large",
+      "arm": "skill",
+      "repetition": 1,
+      "root": "A-thread-028",
+      "acceptance": "passed",
+      "total_tokens": 604222,
+      "input_tokens": 595192,
+      "cached_input_tokens": 535552,
+      "output_tokens": 9030,
+      "reasoning_output_tokens": 2580,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "scheduler_implementation",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-028",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 214445
+        },
+        {
+          "id": "A-thread-029",
+          "model": "gpt-6-luna",
+          "effort": "medium",
+          "tokens": 389777
+        }
+      ]
+    },
+    {
+      "run": "metadata-large-skill-2",
+      "task": "large",
+      "arm": "skill",
+      "repetition": 2,
+      "root": "A-thread-030",
+      "acceptance": "passed",
+      "total_tokens": 580912,
+      "input_tokens": 569473,
+      "cached_input_tokens": 523520,
+      "output_tokens": 11439,
+      "reasoning_output_tokens": 3065,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "implement_scheduler",
+          "agent_type": "default",
+          "model": "gpt-6-luna",
+          "reasoning_effort": "medium",
+          "fork_turns": "none"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-030",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 211332
+        },
+        {
+          "id": "A-thread-031",
+          "model": "gpt-6-luna",
+          "effort": "medium",
+          "tokens": 369580
+        }
+      ]
+    },
+    {
+      "run": "metadata-review-base-1",
+      "task": "review",
+      "arm": "base",
+      "repetition": 1,
+      "root": "A-thread-032",
+      "acceptance": "passed (manual rubric 7/7)",
+      "total_tokens": 224384,
+      "input_tokens": 217598,
+      "cached_input_tokens": 206720,
+      "output_tokens": 6786,
+      "reasoning_output_tokens": 1959,
+      "transport_error_count": 3,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "review_audit",
+          "agent_type": "default",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": null
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-032",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 118995
+        },
+        {
+          "id": "A-thread-033",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 105389
+        }
+      ]
+    },
+    {
+      "run": "metadata-review-skill-1",
+      "task": "review",
+      "arm": "skill",
+      "repetition": 1,
+      "root": "A-thread-034",
+      "acceptance": "passed (manual rubric 7/7)",
+      "total_tokens": 133649,
+      "input_tokens": 129829,
+      "cached_input_tokens": 109824,
+      "output_tokens": 3820,
+      "reasoning_output_tokens": 1520,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [],
+      "threads": [
+        {
+          "id": "A-thread-034",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 133649
+        }
+      ]
+    },
+    {
+      "run": "metadata-tiny-base-1",
+      "task": "tiny",
+      "arm": "base",
+      "repetition": 1,
+      "root": "A-thread-035",
+      "acceptance": "passed",
+      "total_tokens": 142551,
+      "input_tokens": 141509,
+      "cached_input_tokens": 111488,
+      "output_tokens": 1042,
+      "reasoning_output_tokens": 146,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "verify_receipt",
+          "agent_type": "worker",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": "all"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-035",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 115313
+        },
+        {
+          "id": "A-thread-036",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 27238
+        }
+      ]
+    },
+    {
+      "run": "metadata-tiny-base-2",
+      "task": "tiny",
+      "arm": "base",
+      "repetition": 2,
+      "root": "A-thread-037",
+      "acceptance": "passed",
+      "total_tokens": 142508,
+      "input_tokens": 141474,
+      "cached_input_tokens": 111488,
+      "output_tokens": 1034,
+      "reasoning_output_tokens": 270,
+      "transport_error_count": 9,
+      "telemetry_issues": [],
+      "requested_spawns": [
+        {
+          "task_name": "verify_receipt",
+          "agent_type": "worker",
+          "model": null,
+          "reasoning_effort": null,
+          "fork_turns": "all"
+        }
+      ],
+      "threads": [
+        {
+          "id": "A-thread-037",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 115306
+        },
+        {
+          "id": "A-thread-038",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 27202
+        }
+      ]
+    },
+    {
+      "run": "metadata-tiny-skill-1",
+      "task": "tiny",
+      "arm": "skill",
+      "repetition": 1,
+      "root": "A-thread-039",
+      "acceptance": "passed",
+      "total_tokens": 59866,
+      "input_tokens": 59226,
+      "cached_input_tokens": 43264,
+      "output_tokens": 640,
+      "reasoning_output_tokens": 99,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [],
+      "threads": [
+        {
+          "id": "A-thread-039",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 59866
+        }
+      ]
+    },
+    {
+      "run": "metadata-tiny-skill-2",
+      "task": "tiny",
+      "arm": "skill",
+      "repetition": 2,
+      "root": "A-thread-040",
+      "acceptance": "passed",
+      "total_tokens": 59921,
+      "input_tokens": 59261,
+      "cached_input_tokens": 43264,
+      "output_tokens": 660,
+      "reasoning_output_tokens": 122,
+      "transport_error_count": 0,
+      "telemetry_issues": [],
+      "requested_spawns": [],
+      "threads": [
+        {
+          "id": "A-thread-040",
+          "model": "gpt-6-astra",
+          "effort": "ultra",
+          "tokens": 59921
+        }
+      ]
+    }
+  ]
+}
