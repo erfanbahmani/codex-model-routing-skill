@@ -1,0 +1,20 @@
+{
+  "name": "erfanbahmani-skills",
+  "interface": {
+    "displayName": "Erfanbahmani Skills"
+  },
+  "plugins": [
+    {
+      "name": "codex-model-routing",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex-model-routing"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

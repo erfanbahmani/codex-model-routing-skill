@@ -1,7 +1,7 @@
 # Setup
 
-This is for an existing checkout; the [README](../README.md#install-in-codex)
-has the shorter GitHub install. Run these commands from the repository root in
+This is for an existing standalone checkout; the [README](../README.md#install-from-the-codex-marketplace)
+also has a marketplace install. Run these commands from the repository root in
 a POSIX shell (Linux, macOS, or WSL). Set `CODEX_HOME` only if you install the
 optional profiles and Codex uses a directory other than `~/.codex`.
 

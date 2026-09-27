@@ -34,7 +34,24 @@ The manager must be the lead. A lower-model lead must switch before decisions; d
 - No pip, npm, or MCP dependency for core routing. `codebase-memory` is used only when already available. The optional local usage audit and tests need Python 3.10+ and only its standard library.
 - The setup commands use a POSIX shell (Linux, macOS, or WSL).
 
-## Install in Codex
+## Install from the Codex marketplace
+
+With a Codex client that supports `codex plugin`, add this repository's
+marketplace and install the plugin:
+
+```bash
+codex plugin marketplace add erfanbahmani/codex-model-routing-skill
+codex plugin add codex-model-routing@erfanbahmani-skills
+```
+
+This GitHub-backed marketplace is separate from OpenAI's public Plugins Directory.
+Start a new Codex session and check `/skills` for `codex-model-routing`.
+This installs the packaged skill and report script; it does not require an MCP
+server, pip package, or npm package. If your client does not support plugins,
+use the standalone install below. Choose one method so Codex does not discover
+two copies of the same skill.
+
+## Alternative: install the standalone skill
 
 In a POSIX shell (Linux, macOS, or WSL), clone the whole repository into your
 personal [Codex skills directory](https://learn.chatgpt.com/docs/build-skills):
@@ -44,9 +61,8 @@ mkdir -p "$HOME/.agents/skills"
 git clone https://github.com/erfanbahmani/codex-model-routing-skill.git "$HOME/.agents/skills/codex-model-routing"
 ```
 
-Start a new Codex session and check `/skills` for `codex-model-routing`; restart
-Codex if it does not appear. No config edit, pip package, npm package, or MCP
-server is needed. If you already have a checkout, use the
+Start a new Codex session and check `/skills`; restart Codex if it does not
+appear. If you already have a checkout, use the
 [symlink setup](references/setup.md) instead. The three
 [custom-agent profiles](references/setup.md#optional-agent-profiles) are optional.
 
@@ -85,14 +101,17 @@ which may not reveal service-side reroutes. Queued or in-flight workers can be
 unattributable; when coverage is uncertain, it shows an observed subtotal and
 marks the full total and credit figure unavailable rather than guessing.
 
-For a completed whole-thread audit after installing as above, inspect the lead
-and every descendant's persisted model, reasoning effort, and total tokens:
+For a completed whole-thread audit with the standalone install, inspect the
+lead and every descendant's persisted model, reasoning effort, and total tokens:
 
 ```bash
 python3 "$HOME/.agents/skills/codex-model-routing/scripts/runtime_usage.py" --root YOUR_THREAD_ID
 ```
 
-Resolve the script path relative to the installed `SKILL.md`, not the current working
+Marketplace users can use `$codex-model-routing report last` without locating
+the installed plugin cache. For a manual whole-thread audit, find the script
+inside the marketplace-installed skill folder and pass its absolute path to
+`python3`. Resolve the script path relative to the installed `SKILL.md`, not the current working
 directory. Both report modes run `python3 <skill directory>/scripts/runtime_usage.py --report current|last`, use `CODEX_SESSION_ID` to identify the session, and accept `--root` to override it. The helper reads local Codex state read-only. It uses `CODEX_SQLITE_HOME` or `CODEX_HOME` when set; for a custom `sqlite_home` configuration, pass `--db /path/to/state_N.sqlite`. If Codex has no persisted local state, there is nothing to report. Thread metadata is not a per-request model history: use fresh, single-model threads for comparisons. Credit estimates use the dated Standard-speed rate card and are not actual charges, subscription debits, or quota measurements.
 
 ## Benchmark results
@@ -124,6 +143,8 @@ See the [full benchmark analysis (PDF)](evals/codex-model-routing-benchmark-2026
 ## Project files
 
 - [SKILL.md](SKILL.md) — routing policy and dispatch contract
+- [plugins/codex-model-routing/](plugins/codex-model-routing/) — marketplace plugin package
+- [.agents/plugins/marketplace.json](.agents/plugins/marketplace.json) — GitHub marketplace catalog
 - [agent-profiles/](agent-profiles/) — optional `scout`, `builder`, and `implementer` profiles
 - [references/setup.md](references/setup.md) — installation and verification
 - [evals/scenarios.md](evals/scenarios.md) — pressure tests and earlier results
