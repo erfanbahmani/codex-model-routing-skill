@@ -1,6 +1,6 @@
 ---
 name: codex-model-routing
-description: Use when Codex should keep its strongest model in charge, route execution to lower models, or reduce total tokens across agents.
+description: Use when Codex should keep its strongest model in charge, route execution to lower models, reduce total tokens across agents, or report per-prompt routing and usage.
 ---
 
 # Codex Model Routing
@@ -78,6 +78,32 @@ For a measurement, count input plus output tokens for the lead and **all**
 children. Cached input and reasoning output are subsets, not extra tokens.
 Use [`scripts/runtime_usage.py`](scripts/runtime_usage.py) on persisted local
 threads after completion; missing usage means the total is incomplete.
-Separate requested from runtime-confirmed models. Compare identical tasks,
+
+If a task prompt ends with `$codex-model-routing report`, finish the task and
+all workers, then run `python3 <skill directory>/scripts/runtime_usage.py
+--report current` once immediately before the final answer. For a later prompt
+`$codex-model-routing report last`, run the same script with `--report last` to
+report the latest completed turn (usually the prior task). Resolve the script
+relative to this `SKILL.md`, not the current working directory. It uses
+`CODEX_SESSION_ID`, with `--root` available when that variable is missing.
+
+Present the route (manager direct or manager → named workers) and a compact
+table: recorded model, work done, input, cached input, output, total tokens,
+estimated Standard-speed credits. Use the script for model and usage numbers;
+derive work labels only from your observed task and worker assignments/results.
+Group repeated models. Include the overall total when complete; otherwise show
+the observed subtotal and state that the full total and credit figure are
+unavailable. Mark missing data instead of guessing. Cached input is part of
+input, and the credit figure is a
+dated rate-card estimate, not an account debit. `current` is provisional and
+excludes its own final answer. The reported model comes from recorded turn
+context, which may not reveal a service reroute; distinguish it from the
+requested model and disclose that uncertainty. Totals cover observed persisted
+responses. The helper links recorded spawn/follow-up calls to child turns only
+when their call-to-turn order is unambiguous; queued or in-flight work may remain
+unattributed. If coverage is uncertain, call the figures observed subtotals.
+The existing
+`--root THREAD_ID` audit still reports a whole thread tree after completion.
+Compare identical tasks,
 starting context, and quality checks. Never generalize token or credit savings
 from model names or one run.

@@ -34,27 +34,66 @@ The manager must be the lead. A lower-model lead must switch before decisions; d
 - No pip, npm, or MCP dependency for core routing. `codebase-memory` is used only when already available. The optional local usage audit and tests need Python 3.10+ and only its standard library.
 - The setup commands use a POSIX shell (Linux, macOS, or WSL).
 
-## Get started
+## Install in Codex
 
-1. Follow [the setup guide](references/setup.md) to install the skill. Its three custom-agent profiles are optional; installation does not edit your existing Codex configuration.
-2. In Codex or Zed, select `gpt-6-astra` / `ultra` as the lead when available. If you choose a lower lead, the skill will ask for a matching manager-led session before decisions.
-3. Reload Codex, then invoke it explicitly in a Codex session:
+In a POSIX shell (Linux, macOS, or WSL), clone the whole repository into your
+personal [Codex skills directory](https://learn.chatgpt.com/docs/build-skills):
 
-   ```text
-   Use $codex-model-routing for this task. Keep the strongest model in charge, and choose the route with the fewest expected total tokens that preserves verification.
-   ```
+```bash
+mkdir -p "$HOME/.agents/skills"
+git clone https://github.com/erfanbahmani/codex-model-routing-skill.git "$HOME/.agents/skills/codex-model-routing"
+```
 
-Codex can also select a skill when a task matches its description. The [official OpenAI documentation](https://learn.chatgpt.com/docs/build-skills) explains skill discovery and `$` invocation; its [subagent guide](https://learn.chatgpt.com/docs/agent-configuration/subagents) covers custom agent files and model settings.
+Start a new Codex session and check `/skills` for `codex-model-routing`; restart
+Codex if it does not appear. No config edit, pip package, npm package, or MCP
+server is needed. If you already have a checkout, use the
+[symlink setup](references/setup.md) instead. The three
+[custom-agent profiles](references/setup.md#optional-agent-profiles) are optional.
+
+Select `gpt-6-astra` / `ultra` as your lead when available (or your strongest
+supported manager pair), then use it in a prompt:
+
+```text
+Fix the failing login test. $codex-model-routing
+```
+
+The skill cannot change your lead model for you. Codex can also select it when
+a task matches its description, but `$codex-model-routing` invokes it
+explicitly. See [OpenAI's skill guide](https://learn.chatgpt.com/docs/build-skills)
+and [subagent guide](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 
 ## Check what actually happened
 
-After a local Codex run finishes, inspect the lead and every descendant's persisted model, reasoning effort, and total tokens:
+Append `$codex-model-routing report` to a task prompt to request its routing
+report in the final answer:
 
-```bash
-python3 scripts/runtime_usage.py --root YOUR_THREAD_ID
+```text
+Fix the failing login test. $codex-model-routing report
 ```
 
-This optional command reads local Codex SQLite state in read-only mode. It uses `CODEX_SQLITE_HOME` or `CODEX_HOME` when set; for a custom `sqlite_home` configuration, pass `--db /path/to/state_N.sqlite`. Missing thread records or token usage make the total `incomplete`. If Codex has no persisted local state, there is nothing to audit. Thread metadata is not a per-request model history: use fresh, single-model threads for comparisons. It reports usage, **not** money saved; compare complete runs before drawing a credit or latency conclusion.
+That report is provisional: it cannot count its own final answer. To inspect
+the latest completed prompt later, send a new prompt:
+
+```text
+$codex-model-routing report last
+```
+
+These are prompt suffixes, not terminal commands. The report shows the route,
+what each model worked on, input/cached-input/output/total tokens, and estimated
+Standard-speed credits—not actual charges. It uses recorded turn-context models,
+which may not reveal service-side reroutes. Queued or in-flight workers can be
+unattributable; when coverage is uncertain, it shows an observed subtotal and
+marks the full total and credit figure unavailable rather than guessing.
+
+For a completed whole-thread audit after installing as above, inspect the lead
+and every descendant's persisted model, reasoning effort, and total tokens:
+
+```bash
+python3 "$HOME/.agents/skills/codex-model-routing/scripts/runtime_usage.py" --root YOUR_THREAD_ID
+```
+
+Resolve the script path relative to the installed `SKILL.md`, not the current working
+directory. Both report modes run `python3 <skill directory>/scripts/runtime_usage.py --report current|last`, use `CODEX_SESSION_ID` to identify the session, and accept `--root` to override it. The helper reads local Codex state read-only. It uses `CODEX_SQLITE_HOME` or `CODEX_HOME` when set; for a custom `sqlite_home` configuration, pass `--db /path/to/state_N.sqlite`. If Codex has no persisted local state, there is nothing to report. Thread metadata is not a per-request model history: use fresh, single-model threads for comparisons. Credit estimates use the dated Standard-speed rate card and are not actual charges, subscription debits, or quota measurements.
 
 ## Benchmark results
 

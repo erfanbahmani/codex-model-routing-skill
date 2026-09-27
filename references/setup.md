@@ -1,7 +1,9 @@
 # Setup
 
-Run these commands from the repository root in a POSIX shell (Linux, macOS, or
-WSL). Set `CODEX_HOME` first if Codex uses a directory other than `~/.codex`.
+This is for an existing checkout; the [README](../README.md#install-in-codex)
+has the shorter GitHub install. Run these commands from the repository root in
+a POSIX shell (Linux, macOS, or WSL). Set `CODEX_HOME` only if you install the
+optional profiles and Codex uses a directory other than `~/.codex`.
 
 ## Install
 
@@ -11,9 +13,8 @@ Install the core skill:
 set -eu
 
 skill_source=$(pwd -P)
-codex_dir=${CODEX_HOME:-"$HOME/.codex"}
-skill_target="$codex_dir/skills/codex-model-routing"
-mkdir -p "$codex_dir/skills"
+skill_target="$HOME/.agents/skills/codex-model-routing"
+mkdir -p "$HOME/.agents/skills"
 if [ -e "$skill_target" ] || [ -L "$skill_target" ]; then
   printf "Refusing to overwrite: %s\n" "$skill_target" >&2
   exit 1
@@ -23,11 +24,15 @@ ln -s "$skill_source" "$skill_target"
 ```
 
 Keep this checkout in place: the installed skill is a symlink to it. The core
-router uses explicitly pinned built-in agents. The `scout`, `builder`, and
-`implementer` profiles are optional for manual use; a named profile may
-override a spawn's requested model. To install all three, run this separately;
-existing profiles are never overwritten. First check that their model/effort
-pairs are supported by your client's spawn tool, and edit the examples if needed:
+router uses explicitly pinned built-in agents.
+
+## Optional agent profiles
+
+The `scout`, `builder`, and `implementer` profiles are optional for manual use;
+a named profile may override a spawn's requested model. To install all three,
+run this separately. Existing profiles are never overwritten. First check that
+their model/effort pairs are supported by your client's spawn tool, and edit the
+examples if needed:
 
 ```bash
 set -eu
@@ -60,9 +65,8 @@ unrelated coding prompts.
 ## Verify
 
 ```bash
-codex_dir=${CODEX_HOME:-"$HOME/.codex"}
-test -L "$codex_dir/skills/codex-model-routing"
-test -r "$codex_dir/skills/codex-model-routing/SKILL.md"
+test -L "$HOME/.agents/skills/codex-model-routing"
+test -r "$HOME/.agents/skills/codex-model-routing/SKILL.md"
 ```
 
 In a new Codex session, use `/skills` to confirm `codex-model-routing` appears.
