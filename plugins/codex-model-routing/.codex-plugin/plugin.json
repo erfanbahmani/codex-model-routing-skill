@@ -16,6 +16,10 @@
     "category": "Productivity",
     "capabilities": [],
     "websiteURL": "https://github.com/erfanbahmani/codex-model-routing-skill",
-    "defaultPrompt": "Use $codex-model-routing to manage this task with the strongest available model and delegate only when it saves total tokens."
+    "defaultPrompt": [
+      "Use $codex-model-routing to manage this task with the strongest available model and delegate only when it saves total tokens.",
+      "Fix the failing login test. $codex-model-routing report",
+      "$codex-model-routing report last"
+    ]
   }
 }
