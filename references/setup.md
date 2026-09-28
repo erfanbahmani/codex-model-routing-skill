@@ -55,9 +55,9 @@ codebase-memory roles and Codex configuration remain unchanged.
 The skill symlink picks up checkout updates; copied optional profiles do not.
 Review and sync those profiles separately when their settings change.
 
-Select `gpt-6-astra` with `ultra` effort as the lead in your Codex client
-before starting a task, or choose another strongest available manager pair
-for your account. The skill requests a session switch when the lead is lower.
+The model and effort already selected in your Codex session remain the lead;
+the skill does not ask you to switch to a stronger model. It delegates only
+when a suitable lower-model worker is available and the handoff is justified.
 To apply this routing to every task, invoke the skill from your applicable
 `AGENTS.md`; installation alone does not guarantee automatic selection for
 unrelated coding prompts.

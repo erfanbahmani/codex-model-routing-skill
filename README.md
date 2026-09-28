@@ -2,11 +2,10 @@
 
 > Strong decisions. Selective handoffs. Measured outcomes.
 
-**Codex Model Routing** keeps the strongest available model in charge of every task and gives bounded execution to a lower model only when the handoff is likely to reduce **total tokens**. The default manager is `gpt-6-astra` at `ultra`; you can choose a different manager pair for your account.
+**Codex Model Routing** keeps your current Codex model in charge of every task and gives bounded execution to a lower model only when the handoff is likely to reduce **total tokens**. If you are using `gpt-6-sol`, Sol remains the manager even when Astra is available.
 
 ```text
-Manager lead?          → Own scope, route, and final acceptance.
-Lower-model lead?      → Switch to the manager model before task decisions.
+Current session lead?  → Own scope, route, and final acceptance.
 One command or tiny edit? → Manager handles it directly.
 Substantial multi-turn work? → Delegate one complete unit only when the handoff is justified.
 After the handoff      → Manager reads decisive evidence and accepts the result.
@@ -14,11 +13,11 @@ After the handoff      → Manager reads decisive evidence and accepts the resul
 
 ## Why it exists
 
-A child starts a fresh context. Early tests exposed over-delegation and model-pinning failures. This revision requires a strongest-model lead, sends only complete jobs to one lower worker when the handoff is justified, and keeps short work direct. The current benchmark results below show why a cheaper worker does not automatically mean fewer tokens or equivalent quality.
+A child starts a fresh context. Early tests exposed over-delegation and model-pinning failures. The current session model stays in charge, complete jobs go to one lower worker only when the handoff is justified, and short work stays direct. The benchmark results below show why a cheaper worker does not automatically mean fewer tokens or equivalent quality.
 
 | Work | Route |
 | --- | --- |
-| Scope, plan, route, final acceptance | Astra / Ultra manager, or your selected strongest available pair |
+| Scope, plan, route, final acceptance | Current session model and effort (for example, Sol) |
 | One small cohesive action | Manager directly; no worker context |
 | Short lookup, extraction, summary, or mechanical edit | Manager uses a targeted tool directly |
 | Substantial bounded investigation | Luna / medium worker when a fresh context is expected to reduce total tokens |
@@ -26,11 +25,11 @@ A child starts a fresh context. Early tests exposed over-delegation and model-pi
 | Complete ordinary implementation needing more judgment | Terra / medium worker when delegation is justified |
 | High-risk work | Manager decides; one writer and focused checks |
 
-The manager must be the lead. A lower-model lead must switch before decisions; delegated workers execute under their parent's management and do not repeat this gate. The skill cannot silently switch the active model. Worker spawns use the built-in `default` role with explicit model and effort chosen from the active tool's supported models, avoiding conflicting custom-profile settings. A requested worker model is **not** proof of the model that actually ran. See [SKILL.md](SKILL.md).
+The active session model is the manager; the skill never requires a switch to Astra or another stronger model. Delegated workers execute under their parent's management. Worker spawns use the built-in `default` role with explicit model and effort chosen from the active tool's supported models, avoiding conflicting custom-profile settings. A requested worker model is **not** proof of the model that actually ran. See [SKILL.md](SKILL.md).
 
 ## Requirements
 
-- A current, signed-in [Codex client](https://learn.chatgpt.com/docs/codex/cli) with skills and subagents available. Access to `gpt-6-astra` at `ultra` is needed for the default manager; if unavailable, select the strongest pair your account supports. The optional profiles use `gpt-6-luna` and `gpt-5.6-terra`; adjust them to supported models before installation. Model access depends on your account and client. See the [Codex model guide](https://learn.chatgpt.com/docs/models) and [subagent guide](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+- A current, signed-in [Codex client](https://learn.chatgpt.com/docs/codex/cli) with skills and subagents available. No Astra access is required: your active model remains the manager. The optional profiles use `gpt-6-luna` and `gpt-5.6-terra`; adjust them to supported models before installation. Model access depends on your account and client. See the [Codex model guide](https://learn.chatgpt.com/docs/models) and [subagent guide](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 - No pip, npm, or MCP dependency for core routing. `codebase-memory` is used only when already available. The optional local usage audit and tests need Python 3.10+ and only its standard library.
 - The setup commands use a POSIX shell (Linux, macOS, or WSL).
 
@@ -66,8 +65,7 @@ appear. If you already have a checkout, use the
 [symlink setup](references/setup.md) instead. The three
 [custom-agent profiles](references/setup.md#optional-agent-profiles) are optional.
 
-Select `gpt-6-astra` / `ultra` as your lead when available (or your strongest
-supported manager pair), then use it in a prompt:
+Keep whichever model and effort you already selected, then use the skill in a prompt:
 
 ```text
 Fix the failing login test. $codex-model-routing
@@ -116,7 +114,7 @@ directory. Both report modes run `python3 <skill directory>/scripts/runtime_usag
 
 ## Benchmark results
 
-These are small, synthetic tests of the routing policy, **not** a general savings guarantee. The skill was supplied in test prompts; it was not installed on the device. Both campaigns counted the lead and every descendant, and all completed outputs passed their predeclared checks.
+These are small, synthetic tests of earlier fixed-manager routing policies, **not** a general savings guarantee or a fresh benchmark of the current-session lead rule. The skill was supplied in test prompts; it was not installed on the device. Both campaigns counted the lead and every descendant, and all completed outputs passed their predeclared checks.
 
 The [natural-routing retest](evals/live-routing-retest-2026-09-23.md) covered seven task types in 11 matched pairs with an Astra/ultra lead. Controls could delegate normally; the skill chose seven direct runs and four Luna/medium worker runs.
 

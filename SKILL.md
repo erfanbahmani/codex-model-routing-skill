@@ -1,34 +1,30 @@
 ---
 name: codex-model-routing
-description: Use when Codex should keep its strongest model in charge, route execution to lower models, reduce total tokens across agents, or report per-prompt routing and usage.
+description: Use when Codex should keep the current session model in charge, route execution to lower models, reduce total tokens across agents, or report per-prompt routing and usage.
 ---
 
 # Codex Model Routing
 
 ## Contract
 
-The strongest selected model owns the scope, plan, route, and final acceptance
+The current session's lead model owns the scope, plan, route, and final acceptance
 of **every** task. Lower models execute approved work. Minimize total input plus
 output tokens across the lead and every descendant while keeping required
 checks. A cheaper model does not by itself reduce tokens.
 
 If you are a delegated executor, your parent remains the manager. Execute its
-bounded assignment and return evidence; do not apply the lead-model gate,
-reroute, or spawn children. Return new scope or contract decisions to the parent.
+bounded assignment and return evidence; do not reroute or spawn children.
+Return new scope or contract decisions to the parent.
 
-## Establish The Manager
+## Keep The Current Lead
 
-Use the user's explicit manager choice. Otherwise choose the strongest model
-and effort available in the current Codex client: currently
-`gpt-6-astra`/`ultra` when available. Start the session with that pair as the
-lead and confirm the selected model and effort once per session from the
-client or runtime metadata, not just configuration. This skill cannot switch
-an active lead model.
-
-If the lead is lower or its model/effort cannot be confirmed, request a
-matching manager-led session **before** making task decisions. Do not create
-a manager child: the extra context and return trip defeated token reduction
-in the live regression. Resume the task after the session switch.
+Use the model and effort already active in this session as the manager (for
+example, `gpt-6-sol` if that is what the user selected). Do not switch models
+or ask for a new session because a stronger model is available. This skill
+cannot change the active lead model. If its identity is unavailable, continue
+with the current lead and work directly unless you can confirm a supported
+worker is lower. Do not create a manager child: its extra context and return
+trip defeated token reduction in the live regression.
 
 ## Choose The Execution Route
 
@@ -51,8 +47,8 @@ needed, and the focused check together.
 | Ordinary multi-turn implementation needing stronger judgment | `gpt-5.6-terra`/medium |
 
 These pairs are defaults: check the current spawn tool's allowed models and
-efforts first. Choose a supported lower model appropriate to the assignment;
-if none is available, execute directly and disclose the limitation.
+efforts first. Choose a supported model lower than the current lead and
+appropriate to the assignment; if that cannot be confirmed, execute directly.
 
 Use `agent_type="default"` and explicitly set `model`, `reasoning_effort`,
 and `fork_turns="none"` in every worker spawn. A named profile can override a

@@ -1,7 +1,7 @@
 {
   "name": "codex-model-routing",
-  "version": "0.1.0",
-  "description": "Keep the strongest Codex model in charge and measure selective handoffs.",
+  "version": "0.1.1",
+  "description": "Keep the current Codex model in charge and measure selective handoffs.",
   "author": {
     "name": "erfanbahmani"
   },
@@ -11,13 +11,13 @@
   "interface": {
     "displayName": "Codex Model Routing",
     "shortDescription": "Strong decisions, selective handoffs, measured usage.",
-    "longDescription": "Keep a strongest-model Codex lead, delegate bounded work only when justified, and inspect per-prompt token and estimated credit usage.",
+    "longDescription": "Keep the current Codex model as lead, delegate bounded work only when justified, and inspect per-prompt token and estimated credit usage.",
     "developerName": "erfanbahmani",
     "category": "Productivity",
     "capabilities": [],
     "websiteURL": "https://github.com/erfanbahmani/codex-model-routing-skill",
     "defaultPrompt": [
-      "Use $codex-model-routing to manage this task with the strongest available model and delegate only when it saves total tokens.",
+      "Use $codex-model-routing to manage this task with my current model and delegate only when it saves total tokens.",
       "Fix the failing login test. $codex-model-routing report",
       "$codex-model-routing report last"
     ]
